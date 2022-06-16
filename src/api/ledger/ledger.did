@@ -1,0 +1,201 @@
+type Wallet = 
+ record {
+   address: text;
+   currency: Currency;
+ };
+type UpdateInvoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   cost: float64;
+   discount: float64;
+   duetime: nat;
+   items: vec Item;
+   note: text;
+   paymentterms: vec PaymentTerm;
+   status: Status;
+   tax: Tax;
+ };
+type Tax = 
+ record {
+   amount: float64;
+   name: text;
+   number: text;
+   rate: float64;
+ };
+type TXID = nat;
+type Status = 
+ variant {
+   canceled;
+   confirmed;
+   new;
+   paid;
+ };
+type Result_1 = 
+ variant {
+   err: text;
+   ok: Order__1;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type PaymentTerm = 
+ record {
+   address: text;
+   name: text;
+ };
+type Order__1 = 
+ record {
+   amount: float64;
+   buyer: text;
+   changetime: opt int;
+   items: vec OrderItem;
+   memo: opt text;
+   orderid: text;
+   ordertime: int;
+   seller: text;
+   status: OrderStatus;
+ };
+type OrderStatus__1 = 
+ variant {
+   canceled;
+   delivered;
+   new;
+   paid: TXID;
+   processing: text;
+   received;
+ };
+type OrderStatus = 
+ variant {
+   canceled;
+   delivered;
+   new;
+   paid: TXID;
+   processing: text;
+   received;
+ };
+type OrderItem = 
+ record {
+   count: nat;
+   item: variant {
+           file;
+           mint: nat;
+           solution: nat;
+           ticket: nat;
+         };
+ };
+type Order = 
+ record {
+   amount: float64;
+   buyer: text;
+   changetime: opt int;
+   items: vec OrderItem;
+   memo: opt text;
+   orderid: text;
+   ordertime: int;
+   seller: text;
+   status: OrderStatus;
+ };
+type NewOrder = 
+ record {
+   amount: float64;
+   items: vec OrderItem;
+   memo: opt text;
+   orderid: text;
+   seller: text;
+ };
+type NewInvoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   calendar: nat;
+   cost: float64;
+   currency: text;
+   discount: float64;
+   duetime: nat;
+   event: nat;
+   from: Contact;
+   id: text;
+   items: vec Item;
+   note: text;
+   paymentterms: vec PaymentTerm;
+   receiver: opt text;
+   tax: Tax;
+   to: Contact;
+ };
+type Ledger = 
+ service {
+   addInvoice: (NewInvoice) -> (Result);
+   addOrder: (NewOrder) -> (Result);
+   availableCycles: () -> (nat) query;
+   changeInvoiceStatus: (text, InvoiceStatus) -> (Result);
+   changeOrderStatus: (text, OrderStatus) -> (Result_1);
+   findOrdersByStatus: (OrderStatus__1) -> (vec Order) query;
+   getMyInvoice: (InvoiceStatus, nat) -> (vec Invoice) query;
+   getOrder: (text) -> (opt Order) query;
+   getProcessOrders: () -> (vec Order) query;
+   requestDelivery: (text) -> (Result);
+   updateInvoice: (text, UpdateInvoice) -> (Result);
+ };
+type Item = 
+ record {
+   desc: text;
+   itype: variant {
+            cost;
+            income;
+          };
+   price: float64;
+   quantity: nat32;
+ };
+type InvoiceStatus = 
+ variant {
+   canceled;
+   confirmed;
+   new;
+   paid;
+ };
+type Invoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   calendar: nat;
+   cost: float64;
+   createtime: int;
+   currency: text;
+   discount: float64;
+   duetime: nat;
+   event: nat;
+   from: Contact;
+   id: text;
+   items: vec Item;
+   note: text;
+   owner: text;
+   paymentterms: vec PaymentTerm;
+   receiver: opt text;
+   status: Status;
+   tax: Tax;
+   to: Contact;
+ };
+type Currency = text;
+type Contact = 
+ record {
+   address: Address;
+   contact: opt text;
+   email: text;
+   fax: opt text;
+   name: text;
+   phone: text;
+   url: opt text;
+   wallet: opt Wallet;
+ };
+type Address = 
+ record {
+   address: text;
+   city: text;
+   country: text;
+   postcode: text;
+   province: text;
+ };
+service : () -> Ledger

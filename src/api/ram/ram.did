@@ -1,0 +1,302 @@
+type Wallet = 
+ record {
+   address: text;
+   currency: Currency;
+ };
+type UpdateInvoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   cost: float64;
+   discount: float64;
+   duetime: nat;
+   items: vec Item;
+   note: text;
+   paymentterms: vec PaymentTerm;
+   status: Status;
+   tax: Tax;
+ };
+type TypeNotification = 
+ variant {
+   calendar: nat;
+   contact: nat;
+   event: nat;
+   note: nat;
+   other;
+   todo: nat;
+   user: text;
+ };
+type Tax = 
+ record {
+   amount: float64;
+   name: text;
+   number: text;
+   rate: float64;
+ };
+type TXID = nat;
+type Status = 
+ variant {
+   canceled;
+   confirmed;
+   new;
+   paid;
+ };
+type Result = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type Ram = 
+ service {
+   addComment: (NewComment) -> (Result);
+   addInvoice: (NewInvoice) -> (Result);
+   addNotification: (NewNotification) -> ();
+   addOrder: (NewOrder) -> (Result);
+   availableCycles: () -> (nat) query;
+   changeInvoiceStatus: (text, InvoiceStatus) -> (Result);
+   deleteNotification: (nat) -> (Result);
+   findOrdersByStatus: (OrderStatus__1) -> (vec Order) query;
+   getComments: (Comto, nat) -> (vec Comment) query;
+   getLogs: (nat) -> (vec Log) query;
+   getMyInvoice: (InvoiceStatus, nat) -> (vec Invoice) query;
+   getMyMessages: (bool, nat) -> (vec Message) query;
+   getMyNotifications: (bool, nat) -> (vec Notification) query;
+   getOrder: (text) -> (opt Order) query;
+   getProcessOrders: () -> (vec Order) query;
+   getUserLogs: (nat) -> (vec Log) query;
+   log: (NewLog) -> ();
+   message: (NewMessage) -> (Result);
+   readMessage: (nat) -> (Result);
+   readNotification: (nat) -> (Result);
+   updateInvoice: (text, UpdateInvoice) -> (Result);
+ };
+type PaymentTerm = 
+ record {
+   address: text;
+   name: text;
+ };
+type OrderStatus__1 = 
+ variant {
+   canceled;
+   delivered;
+   new;
+   paid: TXID;
+   processing: text;
+   received;
+ };
+type OrderStatus = 
+ variant {
+   canceled;
+   delivered;
+   new;
+   paid: TXID;
+   processing: text;
+   received;
+ };
+type OrderItem = 
+ record {
+   count: nat;
+   item: variant {
+           file;
+           mint: nat;
+           solution: nat;
+           ticket: nat;
+         };
+ };
+type Order = 
+ record {
+   amount: float64;
+   buyer: text;
+   changetime: opt int;
+   items: vec OrderItem;
+   memo: opt text;
+   orderid: text;
+   ordertime: int;
+   seller: text;
+   status: OrderStatus;
+ };
+type Notification = 
+ record {
+   id: nat;
+   isread: bool;
+   note: text;
+   ntype: TypeNotification;
+   readtime: int;
+   receiver: text;
+   sender: text;
+   sendtime: int;
+ };
+type NewOrder = 
+ record {
+   amount: float64;
+   items: vec OrderItem;
+   memo: opt text;
+   orderid: text;
+   seller: text;
+ };
+type NewNotification = 
+ record {
+   note: text;
+   ntype: TypeNotification;
+   receiver: text;
+   sender: text;
+ };
+type NewMessage = 
+ record {
+   attachment: opt text;
+   note: text;
+   receiver: text;
+   replyid: opt nat;
+ };
+type NewLog = 
+ record {
+   action: Action;
+   function: Function;
+   message: text;
+   user: text;
+ };
+type NewInvoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   calendar: nat;
+   cost: float64;
+   currency: text;
+   discount: float64;
+   duetime: nat;
+   event: nat;
+   from: Contact;
+   id: text;
+   items: vec Item;
+   note: text;
+   paymentterms: vec PaymentTerm;
+   receiver: opt text;
+   tax: Tax;
+   to: Contact;
+ };
+type NewComment = 
+ record {
+   attachments: vec text;
+   comment: text;
+   comto: Comto__1;
+ };
+type Message = 
+ record {
+   attachment: opt text;
+   id: nat;
+   isread: bool;
+   note: text;
+   readtime: int;
+   receiver: text;
+   replyid: opt nat;
+   sender: text;
+   sendtime: int;
+ };
+type Log = 
+ record {
+   action: Action;
+   function: Function;
+   logtime: int;
+   message: text;
+   user: text;
+ };
+type Item = 
+ record {
+   desc: text;
+   itype: variant {
+            cost;
+            income;
+          };
+   price: float64;
+   quantity: nat32;
+ };
+type InvoiceStatus = 
+ variant {
+   canceled;
+   confirmed;
+   new;
+   paid;
+ };
+type Invoice = 
+ record {
+   adjust: float64;
+   amount: float64;
+   calendar: nat;
+   cost: float64;
+   createtime: int;
+   currency: text;
+   discount: float64;
+   duetime: nat;
+   event: nat;
+   from: Contact;
+   id: text;
+   items: vec Item;
+   note: text;
+   owner: text;
+   paymentterms: vec PaymentTerm;
+   receiver: opt text;
+   status: Status;
+   tax: Tax;
+   to: Contact;
+ };
+type Function = 
+ variant {
+   calendar: nat;
+   comment: nat;
+   contact: nat;
+   event: nat;
+   note: nat;
+   other;
+   todo: nat;
+   user: text;
+ };
+type Currency = text;
+type Contact = 
+ record {
+   address: Address;
+   contact: opt text;
+   email: text;
+   fax: opt text;
+   name: text;
+   phone: text;
+   url: opt text;
+   wallet: opt Wallet;
+ };
+type Comto__1 = 
+ variant {
+   calendar: nat;
+   event: nat;
+   note: nat;
+   todo: nat;
+ };
+type Comto = 
+ variant {
+   calendar: nat;
+   event: nat;
+   note: nat;
+   todo: nat;
+ };
+type Comment = 
+ record {
+   attachments: vec text;
+   comment: text;
+   comto: Comto__1;
+   timestamp: int;
+   user: text;
+ };
+type Address = 
+ record {
+   address: text;
+   city: text;
+   country: text;
+   postcode: text;
+   province: text;
+ };
+type Action = 
+ variant {
+   create;
+   delete;
+   read;
+   update;
+ };
+service : () -> Ram

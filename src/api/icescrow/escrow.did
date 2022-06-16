@@ -1,0 +1,61 @@
+type Result = 
+ variant {
+   err: text;
+   ok: nat;
+ };
+type Order = 
+ record {
+   account: text;
+   amount: nat64;
+   blockin: nat64;
+   blockout: nat64;
+   buyer: principal;
+   canceltime: int;
+   closetime: int;
+   createtime: int;
+   currency: variant {
+               ADA;
+               BTC;
+               DOT;
+               ETH;
+               ICEG;
+               ICET;
+               ICP;
+               USDC;
+               USDT;
+             };
+   delivertime: int;
+   deposittime: int;
+   expiration: int;
+   id: nat;
+   memo: text;
+   refundtime: int;
+   releasetime: int;
+   seller: principal;
+   status:
+    variant {
+      canceled;
+      closed;
+      delivered;
+      deposited;
+      new;
+      refunded;
+      released;
+    };
+   updatetime: int;
+ };
+type EscrowService = 
+ service {
+   availableCycles: () -> (nat) query;
+   cancel: (nat) -> (Result);
+   close: (nat) -> (Result);
+   confirm: (nat) -> (Result);
+   create: (principal, nat64, text, int) -> (Result);
+   deliver: (nat) -> (Result);
+   deposit: (nat) -> (Result);
+   getAllOrders: () -> (vec Order);
+   getOrder: (nat) -> (Order);
+   getOrders: () -> (vec Order);
+   refund: (nat) -> (Result);
+ };
+service : () -> EscrowService
