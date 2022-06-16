@@ -1,21 +1,10 @@
 import { ActorSubclass, HttpAgent } from "@dfinity/agent";
 import { Principal } from "@dfinity/principal";
 import ICEventService from "../api/icevent/icevent.did";
-import NFTService from "../api/ticket/iceventicket.did";
-import ICETService from "../api/icet/icet.did";
-import STORAGEService from "../api/storage/backend.did";
-import RAMService from "../api/ram/ram.did";
-import LEDGERService from "../api/ledger/ledger.did";
-import ESCROWService from "../api/icescrow/escrow.did";
 
 import { defaultAgent } from "../lib/canisters";
 import * as ICEvent from "../api/icevent/index";
-import * as NFT from "../api/ticket/index";
-import * as ICET from "../api/icet/index";
-import * as Storage from "../api/storage/index";
-import * as RAM from "../api/ram/index";
-import * as LEDGER from "../api/ledger/index";
-import * as ESCROW from "../api/icescrow/index";
+
 
 
 import React, { createContext, useContext, useReducer } from "react";
@@ -31,12 +20,6 @@ type NotificationType = NewNotification & { id: string };
 export type State = {
   agent: HttpAgent;
   icevent: ActorSubclass<ICEventService._SERVICE>;
-  nft: ActorSubclass<NFTService._SERVICE>;
-  icet: ActorSubclass<ICETService._SERVICE>;
-  storage: ActorSubclass<STORAGEService._SERVICE>;
-  ram: ActorSubclass<RAMService._SERVICE>;
-  ledger: ActorSubclass<LEDGERService._SERVICE>;
-  escrow: ActorSubclass<ESCROWService._SERVICE>;
   isAuthed: boolean;
   principal: Principal | null;
   showLoginModal: boolean;
@@ -49,12 +32,6 @@ export type State = {
 
 const createActors = (agent: HttpAgent = defaultAgent) => ({
   icevent: ICEvent.createActor(agent, { actorOptions: {} }),
-  nft: NFT.createActor(agent, { actorOptions: {} }),
-  icet: ICET.createActor(agent, { actorOptions: {} }),
-  storage: Storage.createActor(agent, { actorOptions: {} }),
-  ram: RAM.createActor(agent, { actorOptions: {} }),
-  ledger : LEDGER.createActor(agent, { actorOptions: {} }),
-  escrow : ESCROW.createActor(agent, { actorOptions: {} }),
 });
 
 const initialState: State = {
