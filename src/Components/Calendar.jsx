@@ -14,7 +14,7 @@ const Calendar = () => {
   const [eventsWithoutTag, seteventsWithoutTag] = useState([]);
 
   const today = new Date();
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(new Date());
 
   const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (<Day key={index} IsWeekTitle='true' >{d}</Day>));
   const getDates = (currDate) => {
@@ -29,7 +29,7 @@ const Calendar = () => {
     return (
       <Day
         key={index}
-        isToday={md.isSame(moment(today), 'day')}
+        isToday={md.isSame(moment(new Date()), 'day')}
         isSelected={md.isSame(moment(date), 'day')}
         isCurrMonth={md.month() == moment(date).month()}
         onClick={() => md.month() == moment(date).month() && setDate(md.toDate())}
@@ -56,9 +56,8 @@ const Calendar = () => {
 
   useEffect(() => {
     setDates(getDates(date));
-    // fetchEvents(moment(date), moment(date).add(1, "months"));
-    fetchEvents(dates[0], dates[dates.length - 1]);
-    setHasEvents(eventsWithoutTag.length >= 0)
+    // fetchEvents(dates[0], dates[dates.length - 1]);
+    // setHasEvents(eventsWithoutTag.length >= 0)
     return () => { mountedRef.current = false; }
   }, [date]);
 
@@ -69,8 +68,8 @@ const Calendar = () => {
           {moment(date).format("MMM YYYY")}
         </div>
         <ButtonGroup>
-          <Button onClick={() => setDate(moment(date).subtract(1, 'month'))}><ArrowLeft /></Button>
-          <Button onClick={() => setDate(moment(date).add(1, 'month'))}><ArrowRight /></Button>
+          <Button onClick={() => setDate(moment(date).subtract(1, 'month').toDate())}><ArrowLeft /></Button>
+          <Button onClick={() => setDate(moment(date).add(1, 'month').toDate())}><ArrowRight /></Button>
         </ButtonGroup>
       </Header>
       <Body>
