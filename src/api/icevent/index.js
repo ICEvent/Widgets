@@ -25,7 +25,9 @@ export const canisterId = "ukvuy-5aaaa-aaaaj-qabva-cai";
 
   // Creates an actor with using the candid interface and the HttpAgent
   return Actor.createActor(idlFactory, {
-    agent,
+    agent:new HttpAgent({
+      host: 'https://identity.ic0.app',
+    }),
     canisterId,
     ...options?.actorOptions,
   });
