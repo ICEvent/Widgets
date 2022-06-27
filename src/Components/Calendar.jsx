@@ -8,54 +8,78 @@ const Calendar = () => {
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const [myCalendarID, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
   const [events, setEvents] = useState([]);
-  const [hasEvents, setHasEvents] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
+  const [currMonth, setCurrMonth] = useState(moment(new Date()).format("YYYYMM"));
 
   const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (<Day key={index} IsWeekTitle='true' >{d}</Day>));
-  const getDates = (currDate) => {
-    const currMonthArray = Array.from(Array(moment(currDate).daysInMonth()), (dt, index) => moment(currDate).startOf('month').add(index, 'd').format('YYYYMMDD'));
-    const startDay = moment(currDate).startOf('month').day();
-    const preMonthArray = startDay ? Array.from(Array(startDay), (dt, index) => moment(currDate).subtract(1, 'M').endOf('month').subtract(index, 'd').format('YYYYMMDD')).reverse() : [];
-    const nextMonthArray = Array.from(Array(6 - moment(currDate).endOf('month').day()), (dt, index) => moment(currDate).add(1, 'M').startOf('month').add(index, 'd').format('YYYYMMDD'));
-    return [...preMonthArray, ...currMonthArray, ...nextMonthArray];
-  }
-  const [dates, setDates] = useState(getDates(selectedDate));
-  const dateLst = dates.map(dt => {
-    return (
-      <Day
-        key={dt}
-        isToday={moment(new Date()).format('YYYYMMDD') == dt}
-        isSelected={moment(selectedDate).format('YYYYMMDD') == dt}
-        isCurrMonth={moment(dt).month() == moment(selectedDate).month()}
-        onClick={() => moment(dt).month() == moment(selectedDate).month() && setSelectedDate(moment(dt).toDate())}
-      >
-        {moment(dt).date()}
-      </Day>
-    )
-  });
+  const [dates, setDates] = useState([]);
+  // const [dateEvents, setDateEvents] = useState([]);
 
   const fetchEvents = (s, e) => {
     icevent.getCalendarEvents(BigInt(myCalendarID), s.unix(), e.unix(), BigInt(1)).then(es => {
-      // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
-      const pevents = parseEvents(es);
+      let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
+      const pevents = parseEvents(orderedEvents);
       setEvents(pevents);
     });
   }
 
+  const getDates = () => {
+    const currMonthArray = Array.from(Array(moment(currMonth).daysInMonth()), (dt, index) => moment(currMonth).startOf('month').add(index, 'd').format('YYYYMMDD'));
+    let startDay = moment(currMonth).startOf('month').day();
+    const preMonthArray = startDay ? Array.from(Array(startDay), (dt, index) => moment(currMonth).subtract(1, 'M').endOf('month').subtract(index, 'd').format('YYYYMMDD')).reverse() : [];
+    const nextMonthArray = Array.from(Array(6 - moment(currMonth).endOf('month').day()), (dt, index) => moment(currMonth).add(1, 'M').startOf('month').add(index, 'd').format('YYYYMMDD'));
+    setDates([...preMonthArray, ...currMonthArray, ...nextMonthArray]);
+    return [preMonthArray[0], nextMonthArray[nextMonthArray.length - 1]];
+  }
+
+  const dateEvents = dates.map(date => {
+    return {
+      'date': date,
+      'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
+    };
+  });
+
+
+
+  const dateLst = dateEvents.map(dtev => {
+    return (
+      <Day
+        key={dtev.date}
+        isToday={moment(new Date()).format('YYYYMMDD') == dtev.date}
+        isSelected={selectedDate == dtev.date}
+        isCurrMonth={moment(dtev.date).month() == moment(currMonth)}
+        hasEvents={dtev.events.length > 0}
+        onClick={() => setSelectedDate(dtev.date)}
+      >
+        {moment(dtev.date).date()}
+      </Day>
+    )
+  });
+
+  const preciousMonth = () => {
+    const preMonth = moment(currMonth).subtract(1, 'month').format('YYYYMM');
+    setCurrMonth(preMonth);
+  }
+
+  const nextMonth = () => {
+    const nextMonth = moment(currMonth).add(1, 'month').format('YYYYMM');
+    setCurrMonth(nextMonth);
+  }
+
   useEffect(() => {
-    setDates(getDates(selectedDate));
-    fetchEvents(moment(dates[0]), moment(dates[dates.length - 1]));
-  }, [selectedDate]);
+    const [startDate, endDate] = getDates();
+    fetchEvents(moment(startDate), moment(endDate));
+  }, [currMonth]);
 
   return (
     <Frame>
       <Header>
         <div>
-          {moment(selectedDate).format("MMM YYYY")}
+          {moment(currMonth).format("MMM YYYY")}
         </div>
         <ButtonGroup>
-          <Button onClick={() => setSelectedDate(moment(selectedDate).subtract(1, 'month').toDate())}><ArrowLeft /></Button>
-          <Button onClick={() => setSelectedDate(moment(selectedDate).add(1, 'month').toDate())}><ArrowRight /></Button>
+          <Button onClick={preciousMonth}><ArrowLeft /></Button>
+          <Button onClick={nextMonth}><ArrowRight /></Button>
         </ButtonGroup>
       </Header>
       <Body>
