@@ -2,7 +2,7 @@
 ICEvent Calendar widgets for 3rd party integration
 
 ## Test
-![HomeView](./test/topView.png)
+![HomeView](./test/topView.jpg)
 
 ## Installation
 
