@@ -35,15 +35,6 @@ export default {
     'styled-components',
     '@emotion/react',
     'moment',
-    'moment-timezone',
-    '@dfinity/agent',
-    '@dfinity/principal',
-    'semantic-ui-react',
-    'antd',
-    'react-markdown',
-    'remark-gfm',
-    'remark-breaks',
-    'remark-gemoji',
-    'react-router-dom'
+    '@dfinity/agent'
   ]
 };

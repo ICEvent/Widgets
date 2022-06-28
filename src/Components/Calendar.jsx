@@ -13,7 +13,6 @@ const Calendar = () => {
 
   const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (<Day key={index} IsWeekTitle='true' >{d}</Day>));
   const [dates, setDates] = useState([]);
-  // const [dateEvents, setDateEvents] = useState([]);
 
   const fetchEvents = (s, e) => {
     icevent.getCalendarEvents(BigInt(myCalendarID), s.unix(), e.unix(), BigInt(1)).then(es => {
@@ -22,7 +21,7 @@ const Calendar = () => {
       setEvents(pevents);
     });
   }
-
+  
   const getDates = () => {
     const currMonthArray = Array.from(Array(moment(currMonth).daysInMonth()), (dt, index) => moment(currMonth).startOf('month').add(index, 'd').format('YYYYMMDD'));
     let startDay = moment(currMonth).startOf('month').day();
@@ -38,8 +37,6 @@ const Calendar = () => {
       'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
     };
   });
-
-
 
   const dateLst = dateEvents.map(dtev => {
     return (

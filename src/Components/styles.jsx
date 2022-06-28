@@ -55,7 +55,7 @@ export const Day = styled.div`
   cursor: ${props => (props.IsWeekTitle || !props.isCurrMonth) ? "default" : "pointer"};
   
   ${(props) =>
-    props.isToday &&
+    props.hasEvents &&
     css`
       text-emphasis: filled circle crimson;
       text-emphasis-position: under right;
