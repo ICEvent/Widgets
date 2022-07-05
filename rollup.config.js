@@ -3,6 +3,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from 'rollup-plugin-typescript2';
+import postcss from "rollup-plugin-postcss";
+import { terser } from "rollup-plugin-terser";
+// import path from 'path';
 
 export default {
   input: './src/index.jsx',
@@ -10,8 +13,18 @@ export default {
     file: './lib/bundle.js',
     format: 'cjs'
   },
+  sourceMap: 'inline',
+  // sourceMap: true,
   plugins: [
-    resolve({ extensions: ['.jsx', '.js', '.tsx', '.ts'] }),
+    resolve({ extensions: ['.jsx', '.js','.json', '.ts'] }),
+    terser(),
+    postcss({
+      modules : {
+          globalModulePaths : [
+              'node_modules/semantic-ui-css/semantic.min.css'
+          ]
+      }
+  }),
     typescript({
       tsconfigOverride: {
         compilerOptions: {
@@ -21,20 +34,23 @@ export default {
       }
     }),
     commonjs({
-      extensions: ['.js', '.ts', 'tsx']
+      include : 'node_modules/**',
+      extensions: ['.js', '.ts']
     }),
     babel({
       babelHelpers: 'runtime',
-      extensions: ['.jsx', '.ts', '.tsx'],
+      extensions: ['.jsx', '.ts'],
       exclude: 'node_modules/**'
     })
   ],
   external: [
     'react',
     /@babel\/runtime/,
-    'styled-components',
+    '@dfinity/agent',
     '@emotion/react',
     'moment',
-    '@dfinity/agent'
+    'semantic-ui-css',
+    'semantic-ui-react',
+    'styled-components'
   ]
 };

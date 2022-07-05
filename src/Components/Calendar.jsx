@@ -3,6 +3,8 @@ import { Frame, Header, ButtonGroup, Button, ArrowLeft, ArrowRight, Body, Day } 
 import moment from 'moment';
 import parseEvents from "../components/utils/parseEvents";
 import { icevent } from "../api/icevent/index";
+import { Icon } from 'semantic-ui-react';
+
 
 const Calendar = () => {
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -17,11 +19,12 @@ const Calendar = () => {
   const fetchEvents = (s, e) => {
     icevent.getCalendarEvents(BigInt(myCalendarID), s.unix(), e.unix(), BigInt(1)).then(es => {
       let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
+      // let orderedEvents = es.sort((a, b) => number(a.start) - number(b.start));
       const pevents = parseEvents(orderedEvents);
       setEvents(pevents);
     });
   }
-  
+
   const getDates = () => {
     const currMonthArray = Array.from(Array(moment(currMonth).daysInMonth()), (dt, index) => moment(currMonth).startOf('month').add(index, 'd').format('YYYYMMDD'));
     let startDay = moment(currMonth).startOf('month').day();
@@ -69,13 +72,15 @@ const Calendar = () => {
   }, [currMonth]);
 
   return (
+    // <Icon onClick={preciousMonth} name='angle left' />     
     <Frame>
       <Header>
         <div>
           {moment(currMonth).format("MMM YYYY")}
         </div>
         <ButtonGroup>
-          <Button onClick={preciousMonth}><ArrowLeft /></Button>
+          <Icon onClick={preciousMonth} name='angle left' />
+          {/* <Button onClick={preciousMonth}><ArrowLeft /></Button> */}
           <Button onClick={nextMonth}><ArrowRight /></Button>
         </ButtonGroup>
       </Header>
