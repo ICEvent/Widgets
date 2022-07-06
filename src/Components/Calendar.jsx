@@ -72,16 +72,14 @@ const Calendar = () => {
   }, [currMonth]);
 
   return (
-    // <Icon onClick={preciousMonth} name='angle left' />     
     <Frame>
       <Header>
         <div>
           {moment(currMonth).format("MMM YYYY")}
         </div>
         <ButtonGroup>
-          <Icon onClick={preciousMonth} name='angle left' />
-          {/* <Button onClick={preciousMonth}><ArrowLeft /></Button> */}
-          <Button onClick={nextMonth}><ArrowRight /></Button>
+          <Icon onClick={preciousMonth} name='chevron left' link={true} />
+          <Icon onClick={nextMonth} name='chevron right' link={true} />
         </ButtonGroup>
       </Header>
       <Body>
