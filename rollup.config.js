@@ -14,7 +14,7 @@ export default {
   sourceMap: 'inline',
   plugins: [
     resolve({ extensions: ['.jsx', '.js', '.json', '.ts'] }),
-    terser(),
+    // terser(),
     typescript({
       tsconfigOverride: {
         compilerOptions: {
@@ -34,12 +34,15 @@ export default {
     })
   ],
   external: [
-    'react',
-    /@babel\/runtime/,
+    // /@babel\/runtime/,
+    '@babel/runtime',
     '@dfinity/agent',
     '@emotion/react',
+    '@emotion/styled',
+    '@mui/icons-material',
+    '@mui/material',
     'moment',
-    'semantic-ui-react',
-    'styled-components'
+    'react', 
+    'react/jsx-runtime'
   ]
 };

@@ -1,23 +1,32 @@
 import { useState, useEffect } from 'react';
-import { Frame, Header, ButtonGroup, Button, ArrowLeft, ArrowRight, Body, Day } from './styles';
+
+// import Box from '@mui/material/Box';
+import Grid from '@mui/material/Unstable_Grid2';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+import { Item } from './styles';
+
 import moment from 'moment';
 import parseEvents from "../components/utils/parseEvents";
 import { icevent } from "../api/icevent/index";
-import { Icon } from 'semantic-ui-react';
-
 
 const Calendar = () => {
+  const MIN_WIDTH = 240;
+  // const ITEM_WIDTH = FRAME_WIDTH / 11;
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const [myCalendarID, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(new Date()).format("YYYYMM"));
 
-  const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (<Day key={index} IsWeekTitle='true' >{d}</Day>));
   const [dates, setDates] = useState([]);
 
-  const fetchEvents = (s, e) => {
-    icevent.getCalendarEvents(BigInt(myCalendarID), s.unix(), e.unix(), BigInt(1)).then(es => {
+  const fetchEvents = (startDate, endDate) => {
+    icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
       let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
       // let orderedEvents = es.sort((a, b) => number(a.start) - number(b.start));
       const pevents = parseEvents(orderedEvents);
@@ -32,6 +41,8 @@ const Calendar = () => {
     const nextMonthArray = Array.from(Array(6 - moment(currMonth).endOf('month').day()), (dt, index) => moment(currMonth).add(1, 'M').startOf('month').add(index, 'd').format('YYYYMMDD'));
     setDates([...preMonthArray, ...currMonthArray, ...nextMonthArray]);
     return [preMonthArray[0], nextMonthArray[nextMonthArray.length - 1]];
+    // setDates(currMonthArray);
+    // return [moment(currMonth).startOf('month').format('YYYYMMDD'), moment(currMonth).endOf('month').format('YYYYMMDD')];
   }
 
   const dateEvents = dates.map(date => {
@@ -41,30 +52,48 @@ const Calendar = () => {
     };
   });
 
-  const dateLst = dateEvents.map(dtev => {
+  const handleClick = (selectDate) => {
+    setSelectedDate(selectDate);
+    handleChangeMonth(moment(selectDate).month() - moment(currMonth).month());
+  }
+
+  const handleChangeMonth = (Num) => {
+    const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
+    newMonth && setCurrMonth(newMonth);
+  }
+
+  const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (
+    <Grid key={index} xs={1} sm={1} md={1}>
+      <Item isTitle={true} >
+        <Typography
+          variant='body1'
+          sx={{ fontWeight: 'fontWeightBold' }}
+        >{d}</Typography>
+      </Item>
+    </Grid>
+  ));
+
+  const dateLst = dateEvents.map(dtevt => {
     return (
-      <Day
-        key={dtev.date}
-        isToday={moment(new Date()).format('YYYYMMDD') == dtev.date}
-        isSelected={selectedDate == dtev.date}
-        isCurrMonth={moment(dtev.date).month() == moment(currMonth)}
-        hasEvents={dtev.events.length > 0}
-        onClick={() => setSelectedDate(dtev.date)}
-      >
-        {moment(dtev.date).date()}
-      </Day>
+      <Grid key={dtevt.date} xs={1} sm={1} md={1} onClick={() => handleClick(dtevt.date)}>
+        <Item
+          isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
+          isSelected={selectedDate == dtevt.date}
+          hasEvents={dtevt.events.length > 0}
+        >
+          <Typography
+            variant='body1'
+            sx={{
+              alignItems: 'center',
+              fontWeight: (moment(dtevt.date).format('YYYYMM') == currMonth) ? 'fontWeightBold' : 'fontWeightRegular',
+            }}
+          >
+            {moment(dtevt.date).date()}
+          </Typography>
+        </Item>
+      </Grid >
     )
   });
-
-  const preciousMonth = () => {
-    const preMonth = moment(currMonth).subtract(1, 'month').format('YYYYMM');
-    setCurrMonth(preMonth);
-  }
-
-  const nextMonth = () => {
-    const nextMonth = moment(currMonth).add(1, 'month').format('YYYYMM');
-    setCurrMonth(nextMonth);
-  }
 
   useEffect(() => {
     const [startDate, endDate] = getDates();
@@ -72,21 +101,24 @@ const Calendar = () => {
   }, [currMonth]);
 
   return (
-    <Frame>
-      <Header>
-        <div>
-          {moment(currMonth).format("MMM YYYY")}
-        </div>
-        <ButtonGroup>
-          <Icon onClick={preciousMonth} name='chevron left' link={true} />
-          <Icon onClick={nextMonth} name='chevron right' link={true} />
-        </ButtonGroup>
-      </Header>
-      <Body>
-        {weekTitles}
-        {dateLst}
-      </Body>
-    </Frame>
+    <Stack sx={{ width: MIN_WIDTH }}>
+      <Stack direction='row'>
+        <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
+        <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => { handleChangeMonth(-1) }}>
+          <ArrowBackIosNewIcon fontSize="small" />
+        </IconButton >
+        <IconButton aria-label="arrow-forward" color="primary" size="small" onClick={() => { handleChangeMonth(1) }}>
+          <ArrowForwardIosIcon fontSize="small" />
+        </IconButton>
+      </Stack>
+
+      <Stack direction='row'>
+        <Grid container spacing={{ xs: 1, md: 2 }} columns={7} minWidth={MIN_WIDTH}>
+          {weekTitles}
+          {dateLst}
+        </Grid>
+      </Stack>
+    </Stack >
   );
 }
 
