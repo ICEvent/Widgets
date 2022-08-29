@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { Item } from './styles';
 
@@ -75,21 +76,22 @@ const Calendar = () => {
 
   const dateLst = dateEvents.map(dtevt => {
     return (
-      <Grid key={dtevt.date} xs={1} sm={1} md={1} onClick={() => handleClick(dtevt.date)}>
+      <Grid key={dtevt.date} xs={1} onClick={() => handleClick(dtevt.date)}>
         <Item
           isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
           isSelected={selectedDate == dtevt.date}
-          hasEvents={dtevt.events.length > 0}
+        // hasEvents={dtevt.events.length > 0}
         >
-          <Typography
-            variant='body1'
-            sx={{
-              alignItems: 'center',
-              fontWeight: (moment(dtevt.date).format('YYYYMM') == currMonth) ? 'fontWeightBold' : 'fontWeightRegular',
-            }}
-          >
-            {moment(dtevt.date).date()}
-          </Typography>
+          <Stack alignItems="center">
+            <Typography
+              variant='body1'
+              sx={{ fontWeight: (moment(dtevt.date).format('YYYYMM') == currMonth) ? 'fontWeightBold' : 'fontWeightRegular', }}
+            >
+              {moment(dtevt.date).date()}
+            </Typography>
+            {dtevt.events.length > 0 && <FiberManualRecordIcon color='secondary' sx={{ fontSize: 6 }} />}
+            {/* {dtevt.events.length > 0? <FiberManualRecordIcon color='secondary' sx={{ fontSize: 6 }} />: <Typography variant='caption' sx={{ fontSize: 6 }}>&nbsp;</Typography>} */}
+          </Stack>
         </Item>
       </Grid >
     )
@@ -113,7 +115,7 @@ const Calendar = () => {
       </Stack>
 
       <Stack direction='row'>
-        <Grid container spacing={{ xs: 1, md: 2 }} columns={7} minWidth={MIN_WIDTH}>
+        <Grid container columns={7} minWidth={MIN_WIDTH}>
           {weekTitles}
           {dateLst}
         </Grid>

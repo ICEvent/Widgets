@@ -18,10 +18,9 @@ export const Item = (props) => (
     sx={{
       height: '2rem',
       width: '2rem',
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: 'flex-start',
       backgroundColor: props.isSelected && 'primary.main',
-      border: !props.isTitle && props.isToday && '1px solid royalblue',
+      border: props.isToday && '1px solid royalblue',
       borderRadius: '50%',
     }}
   >
