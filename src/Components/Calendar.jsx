@@ -9,6 +9,12 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+
 import { Item } from './styles';
 
 import moment from 'moment';
@@ -23,14 +29,15 @@ const Calendar = () => {
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(new Date()).format("YYYYMM"));
+  const [selectedDateEvents, setSelectedDateEvents] = useState([]);
 
   const [dates, setDates] = useState([]);
 
   const fetchEvents = (startDate, endDate) => {
     icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
-      let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
-      // let orderedEvents = es.sort((a, b) => number(a.start) - number(b.start));
-      const pevents = parseEvents(orderedEvents);
+      // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
+      // let orderedEvents = es.sort((a, b) => a.start - b.start);
+      const pevents = parseEvents(es);
       setEvents(pevents);
     });
   }
@@ -53,7 +60,9 @@ const Calendar = () => {
     };
   });
 
-  const handleClick = (selectDate) => {
+  const handleSelectDate = (dateEvent) => {
+    setSelectedDateEvents(dateEvent.events);
+    const selectDate = dateEvent.date;
     setSelectedDate(selectDate);
     handleChangeMonth(moment(selectDate).month() - moment(currMonth).month());
   }
@@ -76,11 +85,10 @@ const Calendar = () => {
 
   const dateLst = dateEvents.map(dtevt => {
     return (
-      <Grid key={dtevt.date} xs={1} onClick={() => handleClick(dtevt.date)}>
+      <Grid key={dtevt.date} xs={1} onClick={() => handleSelectDate(dtevt)}>
         <Item
           isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
           isSelected={selectedDate == dtevt.date}
-        // hasEvents={dtevt.events.length > 0}
         >
           <Stack alignItems="center">
             <Typography
@@ -90,10 +98,25 @@ const Calendar = () => {
               {moment(dtevt.date).date()}
             </Typography>
             {dtevt.events.length > 0 && <FiberManualRecordIcon color='secondary' sx={{ fontSize: 6 }} />}
-            {/* {dtevt.events.length > 0? <FiberManualRecordIcon color='secondary' sx={{ fontSize: 6 }} />: <Typography variant='caption' sx={{ fontSize: 6 }}>&nbsp;</Typography>} */}
           </Stack>
         </Item>
       </Grid >
+    )
+  });
+
+  const eventLst = selectedDateEvents.map(evt => {
+    return (
+      <div key={evt.id}>
+        <Divider />
+        <ListItemButton disableGutters alignItems='flex-start'>
+          <ListItemText primary={
+            <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
+              <Typography variant='body2' >{moment(evt.start).format('h:mm')}</Typography>
+              <Typography variant='body2' noWrap>{evt.title}</Typography>
+            </Stack>
+          } />
+        </ListItemButton>
+      </div>
     )
   });
 
@@ -120,6 +143,9 @@ const Calendar = () => {
           {dateLst}
         </Grid>
       </Stack>
+      <List>
+        {eventLst}
+      </List>
     </Stack >
   );
 }
