@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-// import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -10,7 +10,6 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
@@ -106,8 +105,7 @@ const Calendar = () => {
 
   const eventLst = selectedDateEvents.map(evt => {
     return (
-      <div key={evt.id}>
-        <Divider />
+      <Paper key={evt.id} >
         <ListItemButton disableGutters alignItems='flex-start'>
           <ListItemText primary={
             <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
@@ -115,8 +113,7 @@ const Calendar = () => {
               <Typography variant='body2' noWrap>{evt.title}</Typography>
             </Stack>
           } />
-        </ListItemButton>
-      </div>
+        </ListItemButton></Paper>
     )
   });
 
