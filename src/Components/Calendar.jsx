@@ -14,6 +14,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
+// import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+
 import { Item } from './styles';
 
 import moment from 'moment';
@@ -21,7 +23,7 @@ import parseEvents from "../components/utils/parseEvents";
 import { icevent } from "../api/icevent/index";
 
 const Calendar = () => {
-  const MIN_WIDTH = 240;
+  // const MIN_WIDTH = 240;
   // const ITEM_WIDTH = FRAME_WIDTH / 11;
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   const [myCalendarID, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
@@ -29,6 +31,8 @@ const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(new Date()).format("YYYYMM"));
   const [selectedDateEvents, setSelectedDateEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventShow, setEventShow] = useState(false);
 
   const [dates, setDates] = useState([]);
 
@@ -61,14 +65,14 @@ const Calendar = () => {
 
   const handleSelectDate = (dateEvent) => {
     setSelectedDateEvents(dateEvent.events);
-    const selectDate = dateEvent.date;
-    setSelectedDate(selectDate);
-    handleChangeMonth(moment(selectDate).month() - moment(currMonth).month());
+    setSelectedDate(dateEvent.date);
+    const duration = moment(dateEvent.date).month() - moment(currMonth).month();
+    duration && handleChangeMonth(duration);
   }
 
   const handleChangeMonth = (Num) => {
     const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
-    newMonth && setCurrMonth(newMonth);
+    setCurrMonth(newMonth);
   }
 
   const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (
@@ -106,7 +110,7 @@ const Calendar = () => {
   const eventLst = selectedDateEvents.map(evt => {
     return (
       <Paper key={evt.id} >
-        <ListItemButton disableGutters alignItems='flex-start'>
+        <ListItemButton disableGutters alignItems='flex-start' onClick={() => setSelectedEvent(evt)}>
           <ListItemText primary={
             <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
               <Typography variant='body2' >{moment(evt.start).format('h:mm')}</Typography>
@@ -117,13 +121,29 @@ const Calendar = () => {
     )
   });
 
+  const eventView = () => {
+    return (
+      <Paper key={evt.id} >
+        <ListItemButton disableGutters alignItems='flex-start'>
+          <ListItemText primary={
+            <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
+              <Typography variant='body2' >{moment(evt.start).format('h:mm')}</Typography>
+              <Typography variant='body2' noWrap>{evt.title}</Typography>
+            </Stack>
+          } />
+        </ListItemButton>
+      </Paper>
+    )
+  };
+
   useEffect(() => {
     const [startDate, endDate] = getDates();
     fetchEvents(moment(startDate), moment(endDate));
   }, [currMonth]);
 
   return (
-    <Stack sx={{ width: MIN_WIDTH }}>
+    <Stack >
+      {/* <Stack sx={{ width: MIN_WIDTH, gridAutoColumns }}></Stack> */}
       <Stack direction='row'>
         <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
         <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => { handleChangeMonth(-1) }}>
@@ -135,7 +155,8 @@ const Calendar = () => {
       </Stack>
 
       <Stack direction='row'>
-        <Grid container columns={7} minWidth={MIN_WIDTH}>
+        {/* <Grid container columns={7} minWidth={MIN_WIDTH}> */}
+        <Grid container columns={7} >
           {weekTitles}
           {dateLst}
         </Grid>
