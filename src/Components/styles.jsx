@@ -1,4 +1,5 @@
 import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
 
 export const Item = (props) => (
   <IconButton
@@ -14,4 +15,17 @@ export const Item = (props) => (
   >
     {props.children}
   </IconButton>
+);
+
+export const EventDetail = (props) => (
+  <TextField
+    label={props.label}
+    id={props.id}
+    defaultValue={props.defaultValue}
+    size='small'
+    multiline
+    inputProps={{ readOnly: true, }}
+  >
+    {props.children}
+  </TextField >
 );
