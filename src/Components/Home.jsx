@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -13,6 +13,13 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import { Item } from './styles';
 
@@ -20,17 +27,18 @@ import moment from 'moment';
 import parseEvents from "../components/utils/parseEvents";
 import { icevent } from "../api/icevent/index";
 
-const Home = () => {
+const Home = (props) => {
     const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-    const [myCalendarID, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
+    // const [myCalendar, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
+    const [myCalendar, setMyCalendar] = useState(props.calendarID);
+    const [calendarID, setCalendarID] = useState('');
+    const [open, setOpen] = useState(!myCalendar);
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
     const [currMonth, setCurrMonth] = useState(moment(selectedDate).format("YYYYMM"));
     const [selectedDateEvents, setSelectedDateEvents] = useState([]);
-
     const [dates, setDates] = useState([]);
-
 
     const redirectToEvent = (evt) => {
         navigate("/eventView", {
@@ -41,7 +49,7 @@ const Home = () => {
     };
 
     const fetchEvents = (startDate, endDate) => {
-        icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
+        myCalendar && icevent.getCalendarEvents(BigInt(myCalendar), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
             // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
             // let orderedEvents = es.sort((a, b) => a.start - b.start);
             const pevents = parseEvents(es);
@@ -76,6 +84,20 @@ const Home = () => {
         const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
         setCurrMonth(newMonth);
     }
+
+    const handleClose = () => {
+        setCalendarID('');
+        setOpen(true);
+    };
+
+    const handleConfirm = () => {
+        calendarID && setMyCalendar(calendarID);
+        setOpen(!calendarID);
+    };
+
+    const handleChange = (event) => {
+        setCalendarID(event.target.value);
+    };
 
     const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (
         <Grid key={index} xs={1}>
@@ -126,30 +148,53 @@ const Home = () => {
     useEffect(() => {
         const [startDate, endDate] = getDates();
         fetchEvents(moment(startDate), moment(endDate));
-    }, [currMonth]);
+    }, [myCalendar, currMonth]);
 
     return (
-        <Stack >
-            <Stack direction='row'>
-                <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
-                <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => handleChangeMonth(-1)}>
-                    <ArrowBackIosNewIcon fontSize="small" />
-                </IconButton >
-                <IconButton aria-label="arrow-forward" color="primary" size="small" onClick={() => handleChangeMonth(1)}>
-                    <ArrowForwardIosIcon fontSize="small" />
-                </IconButton>
-            </Stack>
+        <div>
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Request Calendar</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        type="number"
+                        margin="dense"
+                        id="calendarID"
+                        label="Calendar ID"
+                        fullWidth
+                        variant="standard"
+                        defaultValue={calendarID}
+                        helperText="Put your Calendar"
+                        onChange={handleChange}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleConfirm}>Confirm</Button>
+                </DialogActions>
+            </Dialog>
+            {!open && <Stack >
+                <Stack direction='row'>
+                    <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
+                    <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => handleChangeMonth(-1)}>
+                        <ArrowBackIosNewIcon fontSize="small" />
+                    </IconButton >
+                    <IconButton aria-label="arrow-forward" color="primary" size="small" onClick={() => handleChangeMonth(1)}>
+                        <ArrowForwardIosIcon fontSize="small" />
+                    </IconButton>
+                </Stack>
 
-            <Stack direction='row'>
-                <Grid container columns={7} >
-                    {weekTitles}
-                    {dateLst}
-                </Grid>
-            </Stack>
-            <List>
-                {eventLst}
-            </List>
-        </Stack >
+                <Stack direction='row'>
+                    <Grid container columns={7} >
+                        {weekTitles}
+                        {dateLst}
+                    </Grid>
+                </Stack>
+                <List>
+                    {eventLst}
+                </List>
+            </Stack>}
+        </div>
     );
 }
 
