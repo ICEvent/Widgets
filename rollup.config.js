@@ -14,7 +14,7 @@ export default {
   sourceMap: 'inline',
   plugins: [
     resolve({ extensions: ['.jsx', '.js', '.json', '.ts'] }),
-    // terser(),
+    terser(),
     typescript({
       tsconfigOverride: {
         compilerOptions: {
