@@ -101,26 +101,28 @@ const Home = (props) => {
 
     const weekTitles = DAYS_OF_THE_WEEK.map((d, index) => (
         <Grid key={index} xs={1}>
-            <Item isTitle={true} >
-                <Typography
-                    variant='body1'
-                    sx={{ fontWeight: 'fontWeightBold' }}
-                >{d}</Typography>
-            </Item>
+            <Stack alignItems="center">
+                <Item isTitle={true} >
+                    <Typography
+                        variant='body1'
+                        sx={{ fontWeight: 'fontWeightBold' }}
+                    >{d}</Typography>
+                </Item>
+            </Stack>
         </Grid>
     ));
 
     const dateLst = dateEvents.map(dtevt => {
         const eventFlag = dtevt.events.length > 0
-            ? <CircleIcon color='secondary' sx={{ fontSize: 6, lineHeight: '2px', mt: 0, }} />
-            : <Typography lineHeight='2px'>&nbsp;</Typography>;
+            ? <CircleIcon color='secondary' sx={{ fontSize: 6, lineHeight: '1px', }} />
+            : <Typography lineHeight='1px'>&nbsp;&nbsp;</Typography>;
         return (
             <Grid
                 key={dtevt.date}
                 xs={1}
                 onClick={() => handleSelectDate(dtevt)}
             >
-                <Stack alignItems="center" justifyContent='center'>
+                <Stack alignItems="center">
                     <Item
                         isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
                         isSelected={selectedDate == dtevt.date}
