@@ -7,7 +7,7 @@ export const Item = (props) => (
     sx={{
       height: '2rem',
       width: '2rem',
-      alignItems: 'flex-start',
+      alignItems: 'center', 
       backgroundColor: props.isSelected && 'primary.main',
       border: props.isToday && '1px solid royalblue',
       borderRadius: '50%',

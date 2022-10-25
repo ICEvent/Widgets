@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
+import CircleIcon from '@mui/icons-material/Circle';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
@@ -18,7 +19,6 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import { Item } from './styles';
@@ -111,37 +111,49 @@ const Home = (props) => {
     ));
 
     const dateLst = dateEvents.map(dtevt => {
+        const eventFlag = dtevt.events.length > 0
+            ? <CircleIcon color='secondary' sx={{ fontSize: 6, lineHeight: '2px', mt: 0, }} />
+            : <Typography lineHeight='2px'>&nbsp;</Typography>;
         return (
-            <Grid key={dtevt.date} xs={1} onClick={() => handleSelectDate(dtevt)}>
-                <Item
-                    isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
-                    isSelected={selectedDate == dtevt.date}
-                >
-                    <Stack alignItems="center">
+            <Grid
+                key={dtevt.date}
+                xs={1}
+                onClick={() => handleSelectDate(dtevt)}
+            >
+                <Stack alignItems="center" justifyContent='center'>
+                    <Item
+                        isToday={moment(new Date()).format('YYYYMMDD') == dtevt.date}
+                        isSelected={selectedDate == dtevt.date}
+                    >
                         <Typography
                             variant='body1'
                             sx={{ fontWeight: (moment(dtevt.date).format('YYYYMM') == currMonth) ? 'fontWeightBold' : 'fontWeightRegular', }}
                         >
                             {moment(dtevt.date).date()}
                         </Typography>
-                        {dtevt.events.length > 0 && <FiberManualRecordIcon color='secondary' sx={{ fontSize: 6 }} />}
-                    </Stack>
-                </Item>
+                    </Item>
+                    {eventFlag}
+                </Stack>
             </Grid >
         )
     });
 
     const eventLst = selectedDateEvents.map(evt => {
         return (
-            <Paper key={evt.id} >
-                <ListItemButton disableGutters alignItems='flex-start' onClick={() => redirectToEvent(evt)}>
-                    <ListItemText primary={
-                        <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
-                            <Typography variant='body2' >{moment(evt.start).format('h:mm')}</Typography>
-                            <Typography variant='body2' noWrap>{evt.title}</Typography>
-                        </Stack>
-                    } />
-                </ListItemButton></Paper>
+            <ListItemButton
+                key={evt.id}
+                disableGutters
+                divider
+                alignItems='flex-start'
+                onClick={() => redirectToEvent(evt)}
+            >
+                <ListItemText primary={
+                    <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} spacing={1}>
+                        <Typography variant='body2' >{moment(evt.start).format('h:mm')}</Typography>
+                        <Typography variant='body2' noWrap>{evt.title}</Typography>
+                    </Stack>
+                } />
+            </ListItemButton>
         )
     });
 
