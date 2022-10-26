@@ -83,6 +83,9 @@ const Home = (props) => {
     const handleChangeMonth = (Num) => {
         const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
         setCurrMonth(newMonth);
+        if (moment(selectedDate).isSame(newMonth, 'month')) return;
+        setSelectedDateEvents([]);
+        setSelectedDate('');
     }
 
     const handleClose = () => {
