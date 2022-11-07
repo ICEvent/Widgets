@@ -67,9 +67,11 @@ const Home = (props) => {
     }
 
     const dateEvents = dates.map(date => {
+        const dtEvents = events.filter(es => moment(es.start).format('YYYYMMDD') == date);
+        // if (selectedDate==date) setSelectedDateEvents(dtEvents);
         return {
             'date': date,
-            'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
+            'events': dtEvents
         };
     });
 
@@ -83,9 +85,9 @@ const Home = (props) => {
     const handleChangeMonth = (Num) => {
         const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
         setCurrMonth(newMonth);
-        if (moment(selectedDate).isSame(newMonth, 'month')) return;
-        setSelectedDateEvents([]);
-        setSelectedDate('');
+        // if (moment(selectedDate).isSame(newMonth, 'month')) return;
+        // setSelectedDateEvents([]);
+        // setSelectedDate('');
     }
 
     const handleClose = () => {
@@ -208,7 +210,7 @@ const Home = (props) => {
                     </Grid>
                 </Stack>
                 <List>
-                    {eventLst}
+                    {(moment(selectedDate).isSame(currMonth, 'month')) && eventLst}
                 </List>
             </Stack>}
         </div>
