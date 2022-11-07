@@ -1,28 +1,19 @@
 import { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import CircleIcon from '@mui/icons-material/Circle';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 
 import { Item } from './styles';
 import EventView from './EventView';
+import MyCalendarID from './MyCalendarID';
 
 import moment from 'moment';
 import parseEvents from "../components/utils/parseEvents";
@@ -31,10 +22,7 @@ import { icevent } from "../api/icevent/index";
 const Calendar = (props) => {
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   // const [myCalendar, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
-  const [myCalendar, setMyCalendar] = useState(props.calendarID);
-  const [calendarID, setCalendarID] = useState('');
-  const [open, setOpen] = useState(!myCalendar);
-  // const navigate = useNavigate();
+  const [myCalendarID, setMyCalendarID] = useState(props.calendarID);
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(selectedDate).format("YYYYMM"));
@@ -42,17 +30,8 @@ const Calendar = (props) => {
   const [dates, setDates] = useState([]);
   const [eventToShow, setEventToShow] = useState(null);
 
-
-  // const redirectToEvent = (evt) => {
-  //     navigate("/eventView", {
-  //         state: {
-  //             event: evt,
-  //         },
-  //     });
-  // };
-
   const fetchEvents = (startDate, endDate) => {
-    myCalendar && icevent.getCalendarEvents(BigInt(myCalendar), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
+    myCalendarID && icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
       // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
       // let orderedEvents = es.sort((a, b) => a.start - b.start);
       const pevents = parseEvents(es);
@@ -70,11 +49,9 @@ const Calendar = (props) => {
   }
 
   const dateEvents = dates.map(date => {
-    const dtEvents = events.filter(es => moment(es.start).format('YYYYMMDD') == date);
-    // if (selectedDate==date) setSelectedDateEvents(dtEvents);
     return {
       'date': date,
-      'events': dtEvents
+      'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
     };
   });
 
@@ -88,24 +65,7 @@ const Calendar = (props) => {
   const handleChangeMonth = (Num) => {
     const newMonth = moment(currMonth).add(Num, 'month').format('YYYYMM');
     setCurrMonth(newMonth);
-    // if (moment(selectedDate).isSame(newMonth, 'month')) return;
-    // setSelectedDateEvents([]);
-    // setSelectedDate('');
   }
-
-  const handleClose = () => {
-    setCalendarID('');
-    setOpen(true);
-  };
-
-  const handleConfirm = () => {
-    calendarID && setMyCalendar(calendarID);
-    setOpen(!calendarID);
-  };
-
-  const handleChange = (event) => {
-    setCalendarID(event.target.value);
-  };
 
   const resetToShowEvent = () => {
     setEventToShow(null);
@@ -174,32 +134,13 @@ const Calendar = (props) => {
   useEffect(() => {
     const [startDate, endDate] = getDates();
     fetchEvents(moment(startDate), moment(endDate));
-  }, [myCalendar, currMonth]);
+  }, [myCalendarID, currMonth]);
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Request Calendar</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            type="number"
-            margin="dense"
-            id="calendarID"
-            label="Calendar ID"
-            fullWidth
-            variant="standard"
-            defaultValue={calendarID}
-            helperText="Put your Calendar"
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-      {!open && !Boolean(eventToShow) &&
+      <MyCalendarID open={!myCalendarID} setCalendarID={setMyCalendarID} />
+      {!!eventToShow && <EventView event={eventToShow} clearEvent={resetToShowEvent} />}
+      {!!myCalendarID && !eventToShow &&
         <Stack >
           <Stack direction='row'>
             <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
@@ -221,7 +162,6 @@ const Calendar = (props) => {
             {(moment(selectedDate).isSame(currMonth, 'month')) && eventLst}
           </List>
         </Stack>}
-      {Boolean(eventToShow) && <EventView event={eventToShow} clearEvent={resetToShowEvent} />}
     </div>
   );
 }
