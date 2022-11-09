@@ -138,7 +138,7 @@ const Calendar = (props) => {
 
   return (
     <div>
-      <MyCalendarID open={!myCalendarID} setCalendarID={setMyCalendarID} />
+      {!myCalendarID && <MyCalendarID open={!myCalendarID} setCalendarID={setMyCalendarID} />}
       {!!eventToShow && <EventView event={eventToShow} clearEvent={resetToShowEvent} />}
       {!!myCalendarID && !eventToShow &&
         <Stack >
