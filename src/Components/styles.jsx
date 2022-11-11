@@ -21,10 +21,10 @@ export const EventDetail = (props) => (
   <TextField
     label={props.label}
     id={props.id}
-    defaultValue={props.defaultValue}
+    value={props.defaultValue}
     size='small'
     multiline
-    inputProps={{ readOnly: true, }}
+    inputProps={{ readOnly: true }}
   >
     {props.children}
   </TextField >
