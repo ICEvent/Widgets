@@ -6,15 +6,24 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import { icevent } from "../api/icevent/index";
+
 const MyCalendarID = (props) => {
+    const [helperText, setHelperText] = useState('');
     const [calendarID, setCalendarID] = useState('');
+
+    const calendarExists = (cid) => {
+        icevent.getCalendar(parseInt(cid)).then(rcals => {
+            rcals["ok"] ? props.setCalendarID(calendarID) : setHelperText(rcals["err"]);
+        })
+    };
 
     const handleClose = () => {
         setCalendarID('');
     };
 
     const handleConfirm = () => {
-        calendarID && props.setCalendarID(calendarID);
+        calendarID && calendarExists(calendarID);
     };
 
     const handleChange = (event) => {
@@ -27,6 +36,7 @@ const MyCalendarID = (props) => {
                 <DialogTitle>Request Calendar</DialogTitle>
                 <DialogContent>
                     <TextField
+                        error={!!helperText}
                         autoFocus
                         type="number"
                         margin="dense"
@@ -35,8 +45,9 @@ const MyCalendarID = (props) => {
                         fullWidth
                         variant="standard"
                         defaultValue={calendarID}
-                        helperText="Put your Calendar"
+                        helperText={helperText}
                         onChange={handleChange}
+                        onE
                     />
                 </DialogContent>
                 <DialogActions>
