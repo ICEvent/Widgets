@@ -21,8 +21,7 @@ import { icevent } from "../api/icevent/index";
 
 const Calendar = (props) => {
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  // const [myCalendar, setMyCalendarID] = useState(105); //664 test calendar widget, 105 Defi Calendar
-  const [myCalendarID, setMyCalendarID] = useState(props.calendarID);
+  const [myCalendarID, setMyCalendarID] = useState(+props.calendarID);
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(selectedDate).format("YYYYMM"));
