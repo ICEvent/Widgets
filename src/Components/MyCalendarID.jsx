@@ -47,7 +47,6 @@ const MyCalendarID = (props) => {
                         defaultValue={calendarID}
                         helperText={helperText}
                         onChange={handleChange}
-                        onE
                     />
                 </DialogContent>
                 <DialogActions>
