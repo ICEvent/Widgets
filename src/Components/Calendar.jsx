@@ -29,6 +29,9 @@ const Calendar = (props) => {
   const [dates, setDates] = useState([]);
   const [eventToShow, setEventToShow] = useState(null);
 
+  const numberInBetween = (low, high, mid) => {
+    return ((mid - low) * (mid - high) <= 0);
+  }
   const fetchEvents = (startDate, endDate) => {
     myCalendarID && icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
       // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
@@ -50,7 +53,8 @@ const Calendar = (props) => {
   const dateEvents = dates.map(date => {
     return {
       'date': date,
-      'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
+      // 'events': events.filter(es => moment(es.start).format('YYYYMMDD') == date)
+      'events': events.filter(es => numberInBetween(moment(es.start).format('YYYYMMDD'), moment(es.end).format('YYYYMMDD'), date))
     };
   });
 
