@@ -145,7 +145,7 @@ const Calendar = (props) => {
       {!!eventToShow && <EventView event={eventToShow} clearEvent={resetToShowEvent} />}
       {!!myCalendarID && !eventToShow &&
         <Stack >
-          <Stack direction='row'>
+          <Stack direction='row' sx={{ mx: 1}}>
             <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
             <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => handleChangeMonth(-1)}>
               <ArrowBackIosNewIcon fontSize="small" />
