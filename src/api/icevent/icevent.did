@@ -1,8 +1,3 @@
-type Wallet__2 = 
- record {
-   address: text;
-   currency: Currency__2;
- };
 type Wallet__1 = 
  record {
    address: text;
@@ -27,15 +22,16 @@ type Wallet =
  };
 type Vansday = 
  service {
+   addAllowCreateCanister: (principal) -> (vec principal);
+   addBadge: (text, text) -> (Result);
    addCalendar: (NewCalendar) -> (Result);
    addCategory: (NewCategory) -> (Result);
    addChecklist: (NewChecklistReq) -> (Result);
-   addContact: (nat, text, text, text, text, text, text) -> (Result);
+   addContact: (NewContact) -> (Result);
+   addController: (principal) -> (Result_2);
    addEventToCalendar: (nat, nat) -> ();
    addInvitee: (NewInvitee) -> (Result);
-   addInvoice: (NewInvoice) -> (Result);
-   addMinter: (text, nat) -> (Result);
-   addNote: (NewNoteReq) -> (Result);
+   addNote: (NewNote) -> (Result);
    addParticipant: (Participant) -> (Result);
    addSystemTodo:
     (record {
@@ -53,17 +49,19 @@ type Vansday =
                             adate: nat;
                             op: text;
                           }) -> (Result);
-   changeInvoiceStatus: (text, variant {
-                                 canceled;
-                                 paid;
-                               }) -> (Result);
+   changeEventStatus: (nat, Status) -> (Result);
    changeTodoStatus: (nat, Status__1) -> (Result);
-   checkRegistration: (nat) -> (Result);
+   checkRegistration: (nat) -> (bool);
    checkUsername: (text) -> (bool) query;
-   claimTicket: (nat, OrderItem, nat, float64, text) -> (Result);
+   createCalendarCanister: (text) -> (Result_4);
    createEvent: (NewEvent) -> (Result);
    createEvents: (vec NewEvent) -> (Result);
    deleteCalendar: (nat) -> (Result);
+   deleteCalendarItem: (nat, variant {
+                               event: nat;
+                               note: nat;
+                               todo: nat;
+                             }) -> (Result);
    deleteCategory: (nat) -> (Result);
    deleteContact: (nat) -> (Result);
    deleteInvitee: (nat, text) -> (Result);
@@ -71,6 +69,7 @@ type Vansday =
    deleteParticipant: (nat, text) -> (Result);
    deleteTodo: (nat) -> (Result);
    editEvent: (nat, UpdateEvent) -> (Result);
+   getAchievement: (text) -> (opt Achievement) query;
    getAppointmentSlots: (nat, nat, nat) ->
     (vec record {
            end: nat;
@@ -83,10 +82,11 @@ type Vansday =
                               }) query;
    getBannerMessage: () -> (text) query;
    getCalTodos: (nat, nat) -> (vec Todo__1) query;
-   getCalendar: (nat) -> (Result_2) query;
+   getCalendar: (nat) -> (Result_3) query;
    getCalendarEvents: (nat, nat, nat, nat) -> (vec Event) query;
    getCalendarNotes: (nat) -> (vec Note) query;
    getCalendars: (opt text, bool, nat) -> (vec Calendar__1) query;
+   getCanisterStatus: (principal) -> (CanisterStatus);
    getChecklists: (nat) -> (vec Checklist) query;
    getDataState: () -> (vec record {
                               text;
@@ -94,34 +94,26 @@ type Vansday =
                             }) query;
    getEvent: (nat) -> (opt Event) query;
    getEvents: (nat, nat, opt text, nat) -> (vec Event) query;
+   getInterestes: (nat) -> (vec Interested) query;
    getInvitedEvents: (nat, nat, nat) -> (vec Event) query;
    getInvitees: (nat) -> (vec Invitee) query;
-   getInvoices: (variant {
-                   calendar: nat;
-                   event: nat;
-                 }, variant {
-                      canceled;
-                      new;
-                      paid;
-                    }) -> (vec Invoice) query;
    getLogs: (nat) -> (vec Log) query;
+   getMyCalendarCanister: () -> (opt CalendarInfo) query;
    getMyCalendars: (nat) -> (vec Calendar__1) query;
+   getMyCanisterStatus: () -> (Result_2);
    getMyCategories: (nat, nat) -> (vec Category) query;
    getMyChecklists: (nat) -> (vec Checklist) query;
    getMyContacts: (nat) -> (vec Contact) query;
    getMyEvents: (nat, nat, nat) -> (vec Event) query;
    getMyNotes: (nat, nat) -> (vec Note) query;
-   getMyOrders: () -> (vec Order) query;
-   getMyTodos: (Status__1, nat) -> (vec Todo__1) query;
+   getMyParticipants: () -> (vec Participant) query;
+   getMyTodos: (Status__1, bool, nat) -> (vec Todo__1) query;
    getNote: (nat) -> (opt Note) query;
    getNotes: (nat) -> (vec Note) query;
-   getOrder: (nat) -> (opt Order) query;
-   getOrderByItem: (OrderItem) -> (opt Order) query;
-   getOrders: () -> (vec Order) query;
    getPartCalendars: (nat) -> (vec Calendar__1) query;
    getParticipants: (nat) -> (vec Participant) query;
    getParticipatedEvents: (nat, nat, nat) -> (vec Event) query;
-   getPublicTodos: (Status__1, nat) -> (vec Todo__1) query;
+   getPublicTodos: (Status__1, bool, nat) -> (vec Todo__1) query;
    getRegisters: (nat) -> (vec Register) query;
    getSubTodos: (nat) -> (vec Todo__1) query;
    getSubscribedCalendars: (nat) -> (vec Calendar__1) query;
@@ -131,7 +123,14 @@ type Vansday =
    getSubscriptions: (nat) -> (vec Subscription) query;
    getSystemAdmin: () -> (text) query;
    getSystemCalendar: () -> (nat) query;
+   getSystemData: () -> (record {
+                           cycles: nat;
+                           heap: nat;
+                           memory: nat;
+                         }) query;
+   getSystemSupport: () -> (text) query;
    getTodo: (nat) -> (Result_1) query;
+   getTypeTodos: (TodoType, bool, nat) -> (vec Todo__1) query;
    getUserData: (text) ->
     (record {
        calendars: vec Calendar;
@@ -141,15 +140,13 @@ type Vansday =
        todos: vec Todo;
      });
    getUserEvents: (text, nat) -> (vec Event) query;
-   getVerifiedEvents: (nat, nat, nat) -> (vec Event) query;
+   getVerifiedEvents: (nat, nat) -> (vec Event) query;
+   interested: (nat) -> (Result);
    leaveParticipants: (nat) -> (Result);
    listUsers: (nat) -> (vec Profile) query;
    lookupUser: (text) -> (opt Profile) query;
-   payOrder: (nat, nat, OrderItem, nat, float64, text) -> (Result);
    registerActivity: (nat, NewRegister) -> (Result);
    removeEvent: (nat) -> (Result);
-   requestMintQuota: (nat, text, nat) -> (Result);
-   requestUploadQuota: (nat, text, nat) -> (Result);
    searchContacts: (text, nat, nat) -> (vec Contact) query;
    searchNotes: (bool, text, nat) -> (vec Note) query;
    setAdmin: (principal) -> ();
@@ -157,10 +154,12 @@ type Vansday =
    setDefaultPageSize: (nat) -> ();
    setSystemAdmin: (text) -> (Result);
    setSystemCalendar: (nat) -> (Result);
+   setSystemSupport: (text) -> (Result);
+   startCalendar: () -> (Result);
+   stopCalendar: () -> (Result);
    subscribe: (nat) -> (Result);
-   tokenTransferNotification: (TokenIdentifier, User, Balance, Memo) ->
-    (opt Balance);
    transferCalendar: (nat, principal) -> (Result);
+   uninterested: (nat) -> (Result);
    unsubscribe: (nat) -> (Result);
    updateActivity: (nat, float64, nat, vec record {
                                              owner: text;
@@ -169,19 +168,12 @@ type Vansday =
    updateCalendar: (nat, UpdateCalendar) -> (Result);
    updateCategory: (nat, text) -> (Result);
    updateChecklist: (nat, NewChecklistReq) -> (Result);
-   updateContact: (nat, text, text, text, text, text) -> (Result);
-   updateInvoice: (text, UpdateInvoice) -> (Result);
+   updateContact: (nat, UpdateContact) -> (Result);
    updateNote: (nat, NewNoteReq) -> (Result);
-   updateOrderStatus: (nat, OrderStatus, OrderData) -> (Result);
    updateProfile: (text, text, text, text, text) -> (Result);
    updateTodo: (nat, UpdateTodo) -> (Result);
    userCount: () -> (nat) query;
    verifyCalendar: (nat) -> (Result);
- };
-type User = 
- variant {
-   address: AccountIdentifier;
-   "principal": principal;
  };
 type UpdateTodo = 
  record {
@@ -195,22 +187,6 @@ type UpdateTodo =
    tags: vec text;
    todo: text;
    ttype: TodoType;
- };
-type UpdateInvoice = 
- record {
-   adjust: float64;
-   amount: float64;
-   cost: float64;
-   discount: float64;
-   items: vec Item;
-   note: text;
-   paymentterms: vec text;
-   status: variant {
-             canceled;
-             new;
-             paid;
-           };
-   tax: Tax;
  };
 type UpdateEvent = 
  record {
@@ -228,6 +204,19 @@ type UpdateEvent =
    title: text;
    tz: text;
  };
+type UpdateContact = 
+ record {
+   address: text;
+   attachments: vec text;
+   contactid: text;
+   ctype: nat;
+   disable: bool;
+   email: text;
+   name: text;
+   note: text;
+   phone: text;
+   tags: vec text;
+ };
 type UpdateCalendar = 
  record {
    color: text;
@@ -240,7 +229,6 @@ type UpdateCalendar =
    tags: vec text;
    url: text;
  };
-type TokenIdentifier = text;
 type Todo__1 = 
  record {
    assignee: text;
@@ -287,18 +275,17 @@ type Todo =
    todo: text;
    ttype: nat;
  };
-type Tax = 
- record {
-   amount: float64;
-   name: text;
-   number: text;
-   rate: float64;
- };
 type Subscription = 
  record {
    calendar: nat;
    stype: nat;
    subscriber: principal;
+ };
+type Status__3 = 
+ variant {
+   running;
+   stopped;
+   stopping;
  };
 type Status__2 = 
  variant {
@@ -338,10 +325,25 @@ type Solution =
 type ScheduleSet__1 = record {};
 type ScheduleSet = record {groups: vec Group;};
 type Schedule = record {groups: vec Group__1;};
-type Result_2 = 
+type Role = 
+ record {
+   name: text;
+   privileges: vec Permission;
+ };
+type Result_4 = 
+ variant {
+   err: text;
+   ok: CalendarInfo;
+ };
+type Result_3 = 
  variant {
    err: text;
    ok: Calendar__1;
+ };
+type Result_2 = 
+ variant {
+   err: text;
+   ok: CanisterStatus;
  };
 type Result_1 = 
  variant {
@@ -417,6 +419,11 @@ type Priority =
    low;
    medium;
  };
+type Permission = 
+ record {
+   authority: Authority;
+   component: Component;
+ };
 type Partrole = 
  variant {
    admin;
@@ -439,44 +446,6 @@ type Organization =
    taxno: opt text;
    wallet: opt Wallet;
  };
-type OrderStatus = 
- variant {
-   assetquota: text;
-   canceled: text;
-   delivered: text;
-   new: text;
-   paid: text;
-   ticketquota: text;
-   uploaded: text;
- };
-type OrderItem = 
- variant {
-   mint: nat;
-   solution: nat;
-   ticket: nat;
- };
-type OrderData = 
- variant {
-   floats: vec float64;
-   ints: vec int;
-   nats: vec nat;
-   texts: vec text;
- };
-type Order = 
- record {
-   amount: float64;
-   changetime: opt int;
-   consumer: text;
-   count: nat;
-   data: OrderData;
-   item: OrderItem;
-   memo: opt text;
-   orderid: nat;
-   ordertime: int;
-   seller: text;
-   status: OrderStatus;
-   txid: nat;
- };
 type Note = 
  record {
    attachments: vec text;
@@ -492,6 +461,7 @@ type Note =
  };
 type NewTodo = 
  record {
+   assignee: text;
    attachments: vec text;
    bounty: float64;
    calendar: nat;
@@ -518,22 +488,15 @@ type NewNoteReq =
    tags: vec text;
    title: text;
  };
-type NewInvoice = 
+type NewNote = 
  record {
-   adjust: float64;
-   amount: float64;
+   attachments: vec text;
    calendar: nat;
-   cost: float64;
-   currency: Currency__2;
-   discount: float64;
-   event: nat;
-   from: Contact__1;
-   id: text;
-   items: vec Item;
-   note: text;
-   paymentterms: vec text;
-   tax: Tax;
-   to: Contact__1;
+   category: nat;
+   content: text;
+   ispublic: bool;
+   tags: vec text;
+   title: text;
  };
 type NewInvitee = 
  record {
@@ -565,6 +528,20 @@ type NewEvent =
    title: text;
    tz: text;
  };
+type NewContact = 
+ record {
+   address: text;
+   attachments: vec text;
+   calendar: nat;
+   contactid: text;
+   ctype: nat;
+   disable: bool;
+   email: text;
+   name: text;
+   note: text;
+   phone: text;
+   tags: vec text;
+ };
 type NewChecklistReq = 
  record {
    calendar: nat;
@@ -591,7 +568,6 @@ type NewCalendar =
    tags: vec text;
    url: text;
  };
-type Memo = vec nat8;
 type Log = 
  record {
    action: nat;
@@ -617,39 +593,6 @@ type Itinerary =
    idays: vec Iday;
    operater: text;
  };
-type Item = 
- record {
-   desc: text;
-   itype: variant {
-            cost;
-            income;
-          };
-   price: float64;
-   quantity: nat32;
- };
-type Invoice = 
- record {
-   adjust: float64;
-   amount: float64;
-   calendar: nat;
-   cost: float64;
-   createtime: int;
-   currency: Currency__2;
-   discount: float64;
-   event: nat;
-   from: Contact__1;
-   id: text;
-   items: vec Item;
-   note: text;
-   paymentterms: vec text;
-   status: variant {
-             canceled;
-             new;
-             paid;
-           };
-   tax: Tax;
-   to: Contact__1;
- };
 type InviteeStatus = 
  variant {
    accepted;
@@ -667,6 +610,11 @@ type Invitee =
            viewer;
          };
    status: InviteeStatus;
+ };
+type Interested = 
+ record {
+   event: nat;
+   interester: principal;
  };
 type Iday = 
  record {
@@ -752,7 +700,6 @@ type Etype =
    itinerary;
    schedule;
  };
-type Currency__2 = text;
 type Currency__1 = 
  record {
    id: text;
@@ -779,17 +726,6 @@ type Contract =
    jon: ContactInfo__1;
    paymenterm: text;
    sam: ContactInfo__1;
- };
-type Contact__1 = 
- record {
-   address: Address;
-   contact: opt text;
-   email: text;
-   fax: opt text;
-   name: text;
-   phone: text;
-   url: opt text;
-   wallet: opt Wallet__2;
  };
 type ContactInfo__2 = 
  record {
@@ -844,6 +780,15 @@ type Contact =
    phone: text;
    tags: vec text;
  };
+type Component = 
+ variant {
+   calendar;
+   contact;
+   event;
+   note;
+   todo;
+   wallet;
+ };
 type Checklist = 
  record {
    calendar: nat;
@@ -862,6 +807,21 @@ type Category =
    owner: text;
    parent: nat;
  };
+type CanisterStatus = 
+ record {
+   cycles: nat;
+   memory_size: nat;
+   module_hash: opt blob;
+   settings: CanisterSettings;
+   status: Status__3;
+ };
+type CanisterSettings = 
+ record {
+   compute_allocation: opt nat;
+   controllers: opt vec principal;
+   freezing_threshold: opt nat;
+   memory_allocation: opt nat;
+ };
 type Calendar__1 = 
  record {
    color: text;
@@ -877,6 +837,13 @@ type Calendar__1 =
    status: Status__2;
    tags: vec text;
    url: text;
+ };
+type CalendarInfo = 
+ record {
+   cid: principal;
+   createtime: int;
+   name: text;
+   owner: principal;
  };
 type Calendar = 
  record {
@@ -929,7 +896,12 @@ type BookingSet =
                };
    tz: text;
  };
-type Balance = nat;
+type Authority = 
+ variant {
+   admin;
+   edit;
+   read;
+ };
 type Appointment = 
  record {
    cost: Cost;
@@ -939,14 +911,6 @@ type Admission =
  record {
    code: text;
    contact: ContactInfo__2;
- };
-type Address = 
- record {
-   address: text;
-   city: text;
-   country: text;
-   postcode: text;
-   province: text;
  };
 type ActivitySet__1 = record {};
 type ActivitySet = record {currency: Currency;};
@@ -960,5 +924,11 @@ type Activity =
                  starton;
                };
  };
-type AccountIdentifier = text;
+type Achievement = 
+ record {
+   badges: vec text;
+   credit: nat;
+   roles: vec Role;
+   userid: text;
+ };
 service : () -> Vansday

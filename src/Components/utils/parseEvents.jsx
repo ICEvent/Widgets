@@ -2,8 +2,10 @@ import moment from 'moment';
 import { EVENT_ACTIVITY } from '../../lib/constants';
 
 const parseEvents = (events) => {
+  // console.log(events)
   let pevents = []
   events.map(e => {
+    // console.log(e);
     let etype = Object.getOwnPropertyNames(e.etype)[0];
     let solution = e.solution;
     if (etype == EVENT_ACTIVITY) {

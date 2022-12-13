@@ -1,4 +1,5 @@
 export const idlFactory = ({ IDL }) => {
+  const Result = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const Ctype = IDL.Variant({
     'appointment' : IDL.Null,
     'schedule' : IDL.Null,
@@ -65,7 +66,6 @@ export const idlFactory = ({ IDL }) => {
     'solution' : Solution,
     'organization' : IDL.Opt(Organization),
   });
-  const Result = IDL.Variant({ 'ok' : IDL.Nat, 'err' : IDL.Text });
   const NewCategory = IDL.Record({
     'hook' : IDL.Nat,
     'name' : IDL.Text,
@@ -78,6 +78,38 @@ export const idlFactory = ({ IDL }) => {
     'calendar' : IDL.Nat,
     'ispublic' : IDL.Bool,
   });
+  const NewContact = IDL.Record({
+    'name' : IDL.Text,
+    'note' : IDL.Text,
+    'tags' : IDL.Vec(IDL.Text),
+    'ctype' : IDL.Nat,
+    'email' : IDL.Text,
+    'calendar' : IDL.Nat,
+    'address' : IDL.Text,
+    'disable' : IDL.Bool,
+    'contactid' : IDL.Text,
+    'phone' : IDL.Text,
+    'attachments' : IDL.Vec(IDL.Text),
+  });
+  const Status__3 = IDL.Variant({
+    'stopped' : IDL.Null,
+    'stopping' : IDL.Null,
+    'running' : IDL.Null,
+  });
+  const CanisterSettings = IDL.Record({
+    'freezing_threshold' : IDL.Opt(IDL.Nat),
+    'controllers' : IDL.Opt(IDL.Vec(IDL.Principal)),
+    'memory_allocation' : IDL.Opt(IDL.Nat),
+    'compute_allocation' : IDL.Opt(IDL.Nat),
+  });
+  const CanisterStatus = IDL.Record({
+    'status' : Status__3,
+    'memory_size' : IDL.Nat,
+    'cycles' : IDL.Nat,
+    'settings' : CanisterSettings,
+    'module_hash' : IDL.Opt(IDL.Vec(IDL.Nat8)),
+  });
+  const Result_2 = IDL.Variant({ 'ok' : CanisterStatus, 'err' : IDL.Text });
   const NewInvitee = IDL.Record({
     'eventid' : IDL.Nat,
     'role' : IDL.Variant({
@@ -88,63 +120,14 @@ export const idlFactory = ({ IDL }) => {
     'inviteeid' : IDL.Text,
     'inviteename' : IDL.Text,
   });
-  const Address = IDL.Record({
-    'postcode' : IDL.Text,
-    'country' : IDL.Text,
-    'province' : IDL.Text,
-    'city' : IDL.Text,
-    'address' : IDL.Text,
-  });
-  const Currency__2 = IDL.Text;
-  const Wallet__2 = IDL.Record({
-    'currency' : Currency__2,
-    'address' : IDL.Text,
-  });
-  const Contact__1 = IDL.Record({
-    'fax' : IDL.Opt(IDL.Text),
-    'url' : IDL.Opt(IDL.Text),
-    'contact' : IDL.Opt(IDL.Text),
-    'name' : IDL.Text,
-    'email' : IDL.Text,
-    'address' : Address,
-    'wallet' : IDL.Opt(Wallet__2),
-    'phone' : IDL.Text,
-  });
-  const Tax = IDL.Record({
-    'name' : IDL.Text,
-    'rate' : IDL.Float64,
-    'number' : IDL.Text,
-    'amount' : IDL.Float64,
-  });
-  const Item = IDL.Record({
-    'desc' : IDL.Text,
-    'quantity' : IDL.Nat32,
-    'itype' : IDL.Variant({ 'cost' : IDL.Null, 'income' : IDL.Null }),
-    'price' : IDL.Float64,
-  });
-  const NewInvoice = IDL.Record({
-    'id' : IDL.Text,
-    'to' : Contact__1,
-    'tax' : Tax,
-    'paymentterms' : IDL.Vec(IDL.Text),
-    'cost' : IDL.Float64,
-    'from' : Contact__1,
-    'note' : IDL.Text,
-    'event' : IDL.Nat,
-    'calendar' : IDL.Nat,
-    'currency' : Currency__2,
-    'adjust' : IDL.Float64,
-    'discount' : IDL.Float64,
-    'items' : IDL.Vec(Item),
-    'amount' : IDL.Float64,
-  });
-  const NewNoteReq = IDL.Record({
+  const NewNote = IDL.Record({
     'title' : IDL.Text,
     'content' : IDL.Text,
     'tags' : IDL.Vec(IDL.Text),
     'calendar' : IDL.Nat,
     'ispublic' : IDL.Bool,
     'category' : IDL.Nat,
+    'attachments' : IDL.Vec(IDL.Text),
   });
   const Partrole = IDL.Variant({
     'admin' : IDL.Null,
@@ -171,6 +154,7 @@ export const idlFactory = ({ IDL }) => {
     'medium' : IDL.Null,
   });
   const NewTodo = IDL.Record({
+    'assignee' : IDL.Text,
     'ttype' : TodoType,
     'tags' : IDL.Vec(IDL.Text),
     'todo' : IDL.Text,
@@ -200,16 +184,24 @@ export const idlFactory = ({ IDL }) => {
     'regtime' : IDL.Int,
     'register' : IDL.Text,
   });
+  const Status = IDL.Variant({
+    'new' : IDL.Null,
+    'canceled' : IDL.Null,
+    'finished' : IDL.Null,
+    'confirmed' : IDL.Null,
+  });
   const Status__1 = IDL.Variant({
     'new' : IDL.Null,
     'done' : IDL.Null,
     'progress' : IDL.Null,
   });
-  const OrderItem = IDL.Variant({
-    'ticket' : IDL.Nat,
-    'mint' : IDL.Nat,
-    'solution' : IDL.Nat,
+  const CalendarInfo = IDL.Record({
+    'cid' : IDL.Principal,
+    'owner' : IDL.Principal,
+    'name' : IDL.Text,
+    'createtime' : IDL.Int,
   });
+  const Result_4 = IDL.Variant({ 'ok' : CalendarInfo, 'err' : IDL.Text });
   const RepeatType = IDL.Variant({
     'weekday' : IDL.Null,
     'weekend' : IDL.Null,
@@ -353,6 +345,33 @@ export const idlFactory = ({ IDL }) => {
     'location' : Location,
     'attachments' : IDL.Vec(IDL.Text),
   });
+  const Component = IDL.Variant({
+    'contact' : IDL.Null,
+    'note' : IDL.Null,
+    'todo' : IDL.Null,
+    'event' : IDL.Null,
+    'calendar' : IDL.Null,
+    'wallet' : IDL.Null,
+  });
+  const Authority = IDL.Variant({
+    'admin' : IDL.Null,
+    'edit' : IDL.Null,
+    'read' : IDL.Null,
+  });
+  const Permission = IDL.Record({
+    'component' : Component,
+    'authority' : Authority,
+  });
+  const Role = IDL.Record({
+    'privileges' : IDL.Vec(Permission),
+    'name' : IDL.Text,
+  });
+  const Achievement = IDL.Record({
+    'userid' : IDL.Text,
+    'badges' : IDL.Vec(IDL.Text),
+    'credit' : IDL.Nat,
+    'roles' : IDL.Vec(Role),
+  });
   const Todo__1 = IDL.Record({
     'id' : IDL.Nat,
     'status' : Status__1,
@@ -387,13 +406,7 @@ export const idlFactory = ({ IDL }) => {
     'isverified' : IDL.Bool,
     'organization' : IDL.Opt(Organization),
   });
-  const Result_2 = IDL.Variant({ 'ok' : Calendar__1, 'err' : IDL.Text });
-  const Status = IDL.Variant({
-    'new' : IDL.Null,
-    'canceled' : IDL.Null,
-    'finished' : IDL.Null,
-    'confirmed' : IDL.Null,
-  });
+  const Result_3 = IDL.Variant({ 'ok' : Calendar__1, 'err' : IDL.Text });
   const Event = IDL.Record({
     'id' : IDL.Nat,
     'tz' : IDL.Text,
@@ -436,6 +449,10 @@ export const idlFactory = ({ IDL }) => {
     'calendar' : IDL.Nat,
     'ispublic' : IDL.Bool,
   });
+  const Interested = IDL.Record({
+    'event' : IDL.Nat,
+    'interester' : IDL.Principal,
+  });
   const InviteeStatus = IDL.Variant({
     'invited' : IDL.Null,
     'rejected' : IDL.Null,
@@ -451,28 +468,6 @@ export const idlFactory = ({ IDL }) => {
     }),
     'inviteeid' : IDL.Text,
     'inviteename' : IDL.Text,
-  });
-  const Invoice = IDL.Record({
-    'id' : IDL.Text,
-    'to' : Contact__1,
-    'tax' : Tax,
-    'status' : IDL.Variant({
-      'new' : IDL.Null,
-      'canceled' : IDL.Null,
-      'paid' : IDL.Null,
-    }),
-    'paymentterms' : IDL.Vec(IDL.Text),
-    'cost' : IDL.Float64,
-    'from' : Contact__1,
-    'note' : IDL.Text,
-    'createtime' : IDL.Int,
-    'event' : IDL.Nat,
-    'calendar' : IDL.Nat,
-    'currency' : Currency__2,
-    'adjust' : IDL.Float64,
-    'discount' : IDL.Float64,
-    'items' : IDL.Vec(Item),
-    'amount' : IDL.Float64,
   });
   const Log = IDL.Record({
     'function' : IDL.Nat,
@@ -501,35 +496,6 @@ export const idlFactory = ({ IDL }) => {
     'contactid' : IDL.Text,
     'phone' : IDL.Text,
     'attachments' : IDL.Vec(IDL.Text),
-  });
-  const OrderStatus = IDL.Variant({
-    'new' : IDL.Text,
-    'canceled' : IDL.Text,
-    'paid' : IDL.Text,
-    'assetquota' : IDL.Text,
-    'uploaded' : IDL.Text,
-    'delivered' : IDL.Text,
-    'ticketquota' : IDL.Text,
-  });
-  const OrderData = IDL.Variant({
-    'texts' : IDL.Vec(IDL.Text),
-    'floats' : IDL.Vec(IDL.Float64),
-    'ints' : IDL.Vec(IDL.Int),
-    'nats' : IDL.Vec(IDL.Nat),
-  });
-  const Order = IDL.Record({
-    'status' : OrderStatus,
-    'changetime' : IDL.Opt(IDL.Int),
-    'data' : OrderData,
-    'item' : OrderItem,
-    'memo' : IDL.Opt(IDL.Text),
-    'count' : IDL.Nat,
-    'txid' : IDL.Nat,
-    'seller' : IDL.Text,
-    'orderid' : IDL.Nat,
-    'ordertime' : IDL.Int,
-    'consumer' : IDL.Text,
-    'amount' : IDL.Float64,
   });
   const Subscription = IDL.Record({
     'calendar' : IDL.Nat,
@@ -637,14 +603,6 @@ export const idlFactory = ({ IDL }) => {
     'data' : IDL.Vec(RegData),
     'name' : IDL.Text,
   });
-  const TokenIdentifier = IDL.Text;
-  const AccountIdentifier = IDL.Text;
-  const User = IDL.Variant({
-    'principal' : IDL.Principal,
-    'address' : AccountIdentifier,
-  });
-  const Balance = IDL.Nat;
-  const Memo = IDL.Vec(IDL.Nat8);
   const Currency__1 = IDL.Record({
     'id' : IDL.Text,
     'name' : IDL.Text,
@@ -661,20 +619,25 @@ export const idlFactory = ({ IDL }) => {
     'solution' : Solution,
     'organization' : IDL.Opt(Organization),
   });
-  const UpdateInvoice = IDL.Record({
-    'tax' : Tax,
-    'status' : IDL.Variant({
-      'new' : IDL.Null,
-      'canceled' : IDL.Null,
-      'paid' : IDL.Null,
-    }),
-    'paymentterms' : IDL.Vec(IDL.Text),
-    'cost' : IDL.Float64,
+  const UpdateContact = IDL.Record({
+    'name' : IDL.Text,
     'note' : IDL.Text,
-    'adjust' : IDL.Float64,
-    'discount' : IDL.Float64,
-    'items' : IDL.Vec(Item),
-    'amount' : IDL.Float64,
+    'tags' : IDL.Vec(IDL.Text),
+    'ctype' : IDL.Nat,
+    'email' : IDL.Text,
+    'address' : IDL.Text,
+    'disable' : IDL.Bool,
+    'contactid' : IDL.Text,
+    'phone' : IDL.Text,
+    'attachments' : IDL.Vec(IDL.Text),
+  });
+  const NewNoteReq = IDL.Record({
+    'title' : IDL.Text,
+    'content' : IDL.Text,
+    'tags' : IDL.Vec(IDL.Text),
+    'calendar' : IDL.Nat,
+    'ispublic' : IDL.Bool,
+    'category' : IDL.Nat,
   });
   const UpdateTodo = IDL.Record({
     'assignee' : IDL.Text,
@@ -689,19 +652,20 @@ export const idlFactory = ({ IDL }) => {
     'attachments' : IDL.Vec(IDL.Text),
   });
   const Vansday = IDL.Service({
+    'addAllowCreateCanister' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(IDL.Principal)],
+        [],
+      ),
+    'addBadge' : IDL.Func([IDL.Text, IDL.Text], [Result], []),
     'addCalendar' : IDL.Func([NewCalendar], [Result], []),
     'addCategory' : IDL.Func([NewCategory], [Result], []),
     'addChecklist' : IDL.Func([NewChecklistReq], [Result], []),
-    'addContact' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-        [Result],
-        [],
-      ),
+    'addContact' : IDL.Func([NewContact], [Result], []),
+    'addController' : IDL.Func([IDL.Principal], [Result_2], []),
     'addEventToCalendar' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'addInvitee' : IDL.Func([NewInvitee], [Result], []),
-    'addInvoice' : IDL.Func([NewInvoice], [Result], []),
-    'addMinter' : IDL.Func([IDL.Text, IDL.Nat], [Result], []),
-    'addNote' : IDL.Func([NewNoteReq], [Result], []),
+    'addNote' : IDL.Func([NewNote], [Result], []),
     'addParticipant' : IDL.Func([Participant], [Result], []),
     'addSystemTodo' : IDL.Func(
         [
@@ -725,22 +689,26 @@ export const idlFactory = ({ IDL }) => {
         [Result],
         [],
       ),
-    'changeInvoiceStatus' : IDL.Func(
-        [IDL.Text, IDL.Variant({ 'canceled' : IDL.Null, 'paid' : IDL.Null })],
-        [Result],
-        [],
-      ),
+    'changeEventStatus' : IDL.Func([IDL.Nat, Status], [Result], []),
     'changeTodoStatus' : IDL.Func([IDL.Nat, Status__1], [Result], []),
-    'checkRegistration' : IDL.Func([IDL.Nat], [Result], []),
+    'checkRegistration' : IDL.Func([IDL.Nat], [IDL.Bool], []),
     'checkUsername' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
-    'claimTicket' : IDL.Func(
-        [IDL.Nat, OrderItem, IDL.Nat, IDL.Float64, IDL.Text],
-        [Result],
-        [],
-      ),
+    'createCalendarCanister' : IDL.Func([IDL.Text], [Result_4], []),
     'createEvent' : IDL.Func([NewEvent], [Result], []),
     'createEvents' : IDL.Func([IDL.Vec(NewEvent)], [Result], []),
     'deleteCalendar' : IDL.Func([IDL.Nat], [Result], []),
+    'deleteCalendarItem' : IDL.Func(
+        [
+          IDL.Nat,
+          IDL.Variant({
+            'note' : IDL.Nat,
+            'todo' : IDL.Nat,
+            'event' : IDL.Nat,
+          }),
+        ],
+        [Result],
+        [],
+      ),
     'deleteCategory' : IDL.Func([IDL.Nat], [Result], []),
     'deleteContact' : IDL.Func([IDL.Nat], [Result], []),
     'deleteInvitee' : IDL.Func([IDL.Nat, IDL.Text], [Result], []),
@@ -748,6 +716,7 @@ export const idlFactory = ({ IDL }) => {
     'deleteParticipant' : IDL.Func([IDL.Nat, IDL.Text], [Result], []),
     'deleteTodo' : IDL.Func([IDL.Nat], [Result], []),
     'editEvent' : IDL.Func([IDL.Nat, UpdateEvent], [Result], []),
+    'getAchievement' : IDL.Func([IDL.Text], [IDL.Opt(Achievement)], ['query']),
     'getAppointmentSlots' : IDL.Func(
         [IDL.Nat, IDL.Nat, IDL.Nat],
         [
@@ -764,7 +733,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getBannerMessage' : IDL.Func([], [IDL.Text], ['query']),
     'getCalTodos' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Vec(Todo__1)], ['query']),
-    'getCalendar' : IDL.Func([IDL.Nat], [Result_2], ['query']),
+    'getCalendar' : IDL.Func([IDL.Nat], [Result_3], ['query']),
     'getCalendarEvents' : IDL.Func(
         [IDL.Nat, IDL.Nat, IDL.Nat, IDL.Nat],
         [IDL.Vec(Event)],
@@ -776,6 +745,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Calendar__1)],
         ['query'],
       ),
+    'getCanisterStatus' : IDL.Func([IDL.Principal], [CanisterStatus], []),
     'getChecklists' : IDL.Func([IDL.Nat], [IDL.Vec(Checklist)], ['query']),
     'getDataState' : IDL.Func(
         [],
@@ -788,26 +758,17 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(Event)],
         ['query'],
       ),
+    'getInterestes' : IDL.Func([IDL.Nat], [IDL.Vec(Interested)], ['query']),
     'getInvitedEvents' : IDL.Func(
         [IDL.Nat, IDL.Nat, IDL.Nat],
         [IDL.Vec(Event)],
         ['query'],
       ),
     'getInvitees' : IDL.Func([IDL.Nat], [IDL.Vec(Invitee)], ['query']),
-    'getInvoices' : IDL.Func(
-        [
-          IDL.Variant({ 'event' : IDL.Nat, 'calendar' : IDL.Nat }),
-          IDL.Variant({
-            'new' : IDL.Null,
-            'canceled' : IDL.Null,
-            'paid' : IDL.Null,
-          }),
-        ],
-        [IDL.Vec(Invoice)],
-        ['query'],
-      ),
     'getLogs' : IDL.Func([IDL.Nat], [IDL.Vec(Log)], ['query']),
+    'getMyCalendarCanister' : IDL.Func([], [IDL.Opt(CalendarInfo)], ['query']),
     'getMyCalendars' : IDL.Func([IDL.Nat], [IDL.Vec(Calendar__1)], ['query']),
+    'getMyCanisterStatus' : IDL.Func([], [Result_2], []),
     'getMyCategories' : IDL.Func(
         [IDL.Nat, IDL.Nat],
         [IDL.Vec(Category)],
@@ -821,17 +782,14 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getMyNotes' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Vec(Note)], ['query']),
-    'getMyOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
+    'getMyParticipants' : IDL.Func([], [IDL.Vec(Participant)], ['query']),
     'getMyTodos' : IDL.Func(
-        [Status__1, IDL.Nat],
+        [Status__1, IDL.Bool, IDL.Nat],
         [IDL.Vec(Todo__1)],
         ['query'],
       ),
     'getNote' : IDL.Func([IDL.Nat], [IDL.Opt(Note)], ['query']),
     'getNotes' : IDL.Func([IDL.Nat], [IDL.Vec(Note)], ['query']),
-    'getOrder' : IDL.Func([IDL.Nat], [IDL.Opt(Order)], ['query']),
-    'getOrderByItem' : IDL.Func([OrderItem], [IDL.Opt(Order)], ['query']),
-    'getOrders' : IDL.Func([], [IDL.Vec(Order)], ['query']),
     'getPartCalendars' : IDL.Func([IDL.Nat], [IDL.Vec(Calendar__1)], ['query']),
     'getParticipants' : IDL.Func([IDL.Nat], [IDL.Vec(Participant)], ['query']),
     'getParticipatedEvents' : IDL.Func(
@@ -840,7 +798,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getPublicTodos' : IDL.Func(
-        [Status__1, IDL.Nat],
+        [Status__1, IDL.Bool, IDL.Nat],
         [IDL.Vec(Todo__1)],
         ['query'],
       ),
@@ -865,7 +823,24 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getSystemAdmin' : IDL.Func([], [IDL.Text], ['query']),
     'getSystemCalendar' : IDL.Func([], [IDL.Nat], ['query']),
+    'getSystemData' : IDL.Func(
+        [],
+        [
+          IDL.Record({
+            'memory' : IDL.Nat,
+            'heap' : IDL.Nat,
+            'cycles' : IDL.Nat,
+          }),
+        ],
+        ['query'],
+      ),
+    'getSystemSupport' : IDL.Func([], [IDL.Text], ['query']),
     'getTodo' : IDL.Func([IDL.Nat], [Result_1], ['query']),
+    'getTypeTodos' : IDL.Func(
+        [TodoType, IDL.Bool, IDL.Nat],
+        [IDL.Vec(Todo__1)],
+        ['query'],
+      ),
     'getUserData' : IDL.Func(
         [IDL.Text],
         [
@@ -885,22 +860,16 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'getVerifiedEvents' : IDL.Func(
-        [IDL.Nat, IDL.Nat, IDL.Nat],
+        [IDL.Nat, IDL.Nat],
         [IDL.Vec(Event)],
         ['query'],
       ),
+    'interested' : IDL.Func([IDL.Nat], [Result], []),
     'leaveParticipants' : IDL.Func([IDL.Nat], [Result], []),
     'listUsers' : IDL.Func([IDL.Nat], [IDL.Vec(Profile)], ['query']),
     'lookupUser' : IDL.Func([IDL.Text], [IDL.Opt(Profile)], ['query']),
-    'payOrder' : IDL.Func(
-        [IDL.Nat, IDL.Nat, OrderItem, IDL.Nat, IDL.Float64, IDL.Text],
-        [Result],
-        [],
-      ),
     'registerActivity' : IDL.Func([IDL.Nat, NewRegister], [Result], []),
     'removeEvent' : IDL.Func([IDL.Nat], [Result], []),
-    'requestMintQuota' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [Result], []),
-    'requestUploadQuota' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [Result], []),
     'searchContacts' : IDL.Func(
         [IDL.Text, IDL.Nat, IDL.Nat],
         [IDL.Vec(Contact)],
@@ -916,13 +885,12 @@ export const idlFactory = ({ IDL }) => {
     'setDefaultPageSize' : IDL.Func([IDL.Nat], [], []),
     'setSystemAdmin' : IDL.Func([IDL.Text], [Result], []),
     'setSystemCalendar' : IDL.Func([IDL.Nat], [Result], []),
+    'setSystemSupport' : IDL.Func([IDL.Text], [Result], []),
+    'startCalendar' : IDL.Func([], [Result], []),
+    'stopCalendar' : IDL.Func([], [Result], []),
     'subscribe' : IDL.Func([IDL.Nat], [Result], []),
-    'tokenTransferNotification' : IDL.Func(
-        [TokenIdentifier, User, Balance, Memo],
-        [IDL.Opt(Balance)],
-        [],
-      ),
     'transferCalendar' : IDL.Func([IDL.Nat, IDL.Principal], [Result], []),
+    'uninterested' : IDL.Func([IDL.Nat], [Result], []),
     'unsubscribe' : IDL.Func([IDL.Nat], [Result], []),
     'updateActivity' : IDL.Func(
         [
@@ -938,18 +906,8 @@ export const idlFactory = ({ IDL }) => {
     'updateCalendar' : IDL.Func([IDL.Nat, UpdateCalendar], [Result], []),
     'updateCategory' : IDL.Func([IDL.Nat, IDL.Text], [Result], []),
     'updateChecklist' : IDL.Func([IDL.Nat, NewChecklistReq], [Result], []),
-    'updateContact' : IDL.Func(
-        [IDL.Nat, IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
-        [Result],
-        [],
-      ),
-    'updateInvoice' : IDL.Func([IDL.Text, UpdateInvoice], [Result], []),
+    'updateContact' : IDL.Func([IDL.Nat, UpdateContact], [Result], []),
     'updateNote' : IDL.Func([IDL.Nat, NewNoteReq], [Result], []),
-    'updateOrderStatus' : IDL.Func(
-        [IDL.Nat, OrderStatus, OrderData],
-        [Result],
-        [],
-      ),
     'updateProfile' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [Result],

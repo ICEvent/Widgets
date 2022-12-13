@@ -5,8 +5,34 @@ export const ONE_HOUR_MS = 60 * 60 * 1000;
 export const ONE_WEEK_SEC = 7 * 24 * 60 * 60;
 export const ONE_WEEK_NS = BigInt(ONE_WEEK_SEC * 1e9);
 
+export const MINT_CYCLES_MEMO = 1347768404;
 
 export const MAX_CHUNK_SIZE = 1024 * 500; // 500kb for file upload in storage canister
+
+//event status
+export const EVENT_STATUS_NEW = "new";
+export const EVENT_STATUS_CONFIRMED = "confirmed";
+export const EVENT_STATUS_FINISHED = "finished";
+export const EVENT_STATUS_CANCELED = "canceled";
+
+//todo status
+export const TODO_STATUS_NEW = "new";
+export const TODO_STATUS_PROGRESS = "progress";
+export const TODO_STATUS_DONE = "done";
+
+export const TODO_PRIORITY_HIGH = 'high';
+export const TODO_PRIORITY_MEDIUM = 'medium';
+export const TODO_PRIORITY_LOW = 'low';
+
+//order status
+export const ORDER_STATUS_NEW = "new";
+export const ORDER_STATUS_PAID = "paid";
+export const ORDER_STATUS_DEPOSITED = "deposited";
+export const ORDER_STATUS_DELIVERED = "delivered";
+export const ORDER_STATUS_RECEIVED = "received";
+export const ORDER_STATUS_RELEASED = "released";
+export const ORDER_STATUS_CLOSED = "closed";
+export const ORDER_STATUS_CANCELED = "canceled";
 
 //event types
 export const EVENT_COMMON = "common";
@@ -16,12 +42,12 @@ export const EVENT_SCHEDULE = "schedule";
 export const EVENT_ITINERARY = "itinerary";
 export const EVENT_CONTRACT = "contract";
 //todo types
-export const TODO_TASK = "task";
-export const TODO_ISSUE = "issue";
-export const TODO_IDEA = "idea";
-export const TODO_TICKET = "ticket";
-export const TODO_PROPOSAL = "proposal";
-export const TODO_BOUNTY = "bounty";
+export const TODO_TASK = 'task';
+export const TODO_ISSUE = 'issue';
+export const TODO_IDEA = 'idea';
+export const TODO_TICKET = 'ticket';
+export const TODO_PROPOSAL = 'proposal';
+export const TODO_BOUNTY = 'bounty';
 
 //form data
 export const OPTIONS_LOCATION = [
@@ -53,6 +79,9 @@ export const CANISTER_STORAGE = "5pqgi-saaaa-aaaal-aaavq-cai";
 export const CANISTER_RAM = "pxu6k-jaaaa-aaaap-aaamq-cai";
 export const CANISTER_LEDGER = "7qstd-hiaaa-aaaak-aariq-cai";
 export const CANISTER_ESCROW = "oslfo-7iaaa-aaaag-qakra-cai";
+export const CANISTER_TREASURY = "gncpj-jyaaa-aaaan-qagta-cai";
+export const CANISTER_CYCLES = "rkp4c-7iaaa-aaaaa-aaaca-cai";
+export const CANISTER_ATTENDNFT = "vjod3-4iaaa-aaaan-qaoeq-cai";
 
 export const WHITELIST = [
   CANISTER_ICEVENT,
@@ -65,6 +94,8 @@ export const WHITELIST = [
   CANISTER_LEDGER,
   'gncpj-jyaaa-aaaan-qagta-cai',
   CANISTER_ESCROW,
+  CANISTER_TREASURY,
+  CANISTER_ATTENDNFT
 ].filter(
   Boolean
 );
