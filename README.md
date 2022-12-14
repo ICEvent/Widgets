@@ -9,7 +9,14 @@ ICEvent Calendar widgets for 3rd party integration
 2. npm install @dfinity/agent @emotion/react @emotion/styled @mui/icons-material @mui/material moment
 3. use Calendar with the arribute calendarID which is your calendar id from ICEvent platform.
 
+
+
 ## Configuration
+ example:
+  ```
+  import { Calendar } from "icevent-calendar";  
+  <Calendar calendarId="35"/>
+  ```
 
 
 
