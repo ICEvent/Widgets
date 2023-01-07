@@ -19,11 +19,7 @@ ICEvent Calendar widgets for 3rd party integration
   ```
 
 ## issue
-add below snippet in index.html for solving "ReferenceError: global is not defined" error
+for Vite project, add below snippet in vite.config.js for solving "ReferenceError: global is not defined" error
    ```
-    <script type="module">
-     import { Buffer } from "buffer"
-     window.global = window
-     window.Buffer = Buffer
-   </script>
+    define: {global: 'window'},
   ```
