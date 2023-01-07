@@ -8,7 +8,7 @@ import { terser } from "rollup-plugin-terser";
 export default {
   input: './src/index.jsx',
   output: {
-    file: './lib/bundle.js',
+    file: './bundle.js',
     format: 'cjs'
   },
   sourceMap: 'inline',
