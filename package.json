@@ -1,6 +1,6 @@
 {
   "name": "icevent-calendar",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Calendar for ICEvent",
   "main": "bundle.js",
   "scripts": {
