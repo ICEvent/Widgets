@@ -14,8 +14,17 @@ ICEvent Calendar widgets for 3rd party integration
 ## Configuration
  example:
   ```
-  import { Calendar } from "icevent-calendar";  
-  <Calendar calendarId="35"/>
+  import { Calendar } from "icevent-calendar"; 
+  import iceventConfig from './icevent.json';
+
+  <Calendar iceventConfig={iceventConfig} />
+  ```
+  
+  configure file icevent.json:
+  ```
+  {
+    "calendarID": "35"
+  }
   ```
 
 ## issue
