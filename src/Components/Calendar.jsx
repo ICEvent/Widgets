@@ -13,7 +13,7 @@ import Divider from '@mui/material/Divider';
 
 import { Item } from './styles';
 import EventView from './EventView';
-import MyCalendarID from './MyCalendarID';
+// import MyCalendarID from './MyCalendarID';
 
 import moment from 'moment';
 import parseEvents from "../components/utils/parseEvents";
@@ -21,7 +21,8 @@ import { icevent } from "../api/icevent/index";
 
 const Calendar = (props) => {
   const DAYS_OF_THE_WEEK = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  const [myCalendarID, setMyCalendarID] = useState(+props.calendarID);
+  // const [myCalendarID, setMyCalendarID] = useState(+props.calendarID);
+  const myCalendarID = +props.iceventConfig?.calendarID;
   const [events, setEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(moment(new Date()).format('YYYYMMDD'));
   const [currMonth, setCurrMonth] = useState(moment(selectedDate).format("YYYYMM"));
@@ -32,6 +33,7 @@ const Calendar = (props) => {
   const numberInBetween = (low, high, mid) => {
     return ((mid - low) * (mid - high) <= 0);
   }
+
   const fetchEvents = (startDate, endDate) => {
     myCalendarID && icevent.getCalendarEvents(BigInt(myCalendarID), startDate.unix(), endDate.unix(), BigInt(1)).then(es => {
       // let orderedEvents = es.sort((a, b) => a.start < b.start ? -1 : (a.start > b.start ? 1 : 0))
@@ -137,15 +139,17 @@ const Calendar = (props) => {
   useEffect(() => {
     const [startDate, endDate] = getDates();
     fetchEvents(moment(startDate), moment(endDate));
-  }, [myCalendarID, currMonth]);
+    // }, [myCalendarID, currMonth]);
+  }, [currMonth]);
 
   return (
     <div>
-      {!myCalendarID && <MyCalendarID open={!myCalendarID} setCalendarID={setMyCalendarID} />}
+      {/* {!myCalendarID && <MyCalendarID open={!myCalendarID} setCalendarID={setMyCalendarID} />} */}
       {!!eventToShow && <EventView event={eventToShow} clearEvent={resetToShowEvent} />}
-      {!!myCalendarID && !eventToShow &&
+      {/* {!!myCalendarID && !eventToShow && */}
+      {!eventToShow &&
         <Stack >
-          <Stack direction='row' sx={{ mx: 1}}>
+          <Stack direction='row' sx={{ mx: 1 }}>
             <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >{moment(currMonth).format("MMM YYYY")}</Typography>
             <IconButton aria-label="arrow-back" color="primary" size="small" onClick={() => handleChangeMonth(-1)}>
               <ArrowBackIosNewIcon fontSize="small" />

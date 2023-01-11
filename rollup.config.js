@@ -12,6 +12,7 @@ export default {
     format: 'cjs'
   },
   sourceMap: 'inline',
+  defaultIsModuleExports: true,
   plugins: [
     resolve({ extensions: ['.jsx', '.js', '.json', '.ts'] }),
     terser(),
