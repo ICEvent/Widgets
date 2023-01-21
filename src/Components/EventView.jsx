@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -18,12 +19,13 @@ const EventView = (props) => {
                 </IconButton >
                 <Typography variant='h6' sx={{ flexGrow: 1 }} paddingLeft={1} >Event</Typography>
             </Stack>
-            <Stack spacing={2}>
+            <Box sx={{ p: 1, }}>
                 <EventDetail label="Title" id="title" defaultValue={evt.title} />
                 <EventDetail label="Date(Start ~ End)" id="date" defaultValue={date} />
                 <EventDetail label="Location" id="location" defaultValue={evt.location.url} />
                 <EventDetail label="Description" id="description" defaultValue={evt.description} />
-            </Stack>
+            </Box>
+
         </Stack >
     )
 }

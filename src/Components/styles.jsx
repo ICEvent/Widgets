@@ -7,7 +7,6 @@ export const Item = (props) => (
     sx={{
       height: '2rem',
       width: '2rem',
-      // alignItems: 'center', 
       backgroundColor: props.isSelected && 'primary.main',
       border: props.isToday && '1px solid royalblue',
       borderRadius: '50%',
@@ -24,7 +23,9 @@ export const EventDetail = (props) => (
     value={props.defaultValue}
     size='small'
     multiline
-    inputProps={{ readOnly: true }}
+    fullWidth
+    readOnly
+    sx={{ mb: 1 }}
   >
     {props.children}
   </TextField >
